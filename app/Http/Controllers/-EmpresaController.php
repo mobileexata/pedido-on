@@ -38,8 +38,7 @@ class EmpresaController extends Controller
             'empresa' => $empresa,
             'produtos' => $produtos->paginate(),
             'q' => $data['q'] ?? null,
-            'has_photo' => $data['has_photo'] ?? null,
-            'has_stock' => $data['has_stock'] ?? null
+            'sem_imagem' => $data['sem_imagem'] ?? null
         ]);
     }
 
@@ -52,16 +51,8 @@ class EmpresaController extends Controller
                 ->orWhere('referencia', 'like', "%{$data['q']}%")
                 ->orWhere('preco', 'like', str_replace(',', '.', "%{$data['q']}%"))
                 ->orWhere('estoque', 'like', str_replace(',', '.', "%{$data['q']}%"));
-        if (isset($data['has_photo']) && $data['has_photo'] == 'N')
+        if (isset($data['sem_imagem']))
             $produtos->whereNull('imagem');
-        elseif (isset($data['has_photo']) && $data['has_photo'] == 'S')
-            $produtos->whereNotNull('imagem');
-
-        if (isset($data['has_stock']) && $data['has_stock'] == 'S')
-            $produtos->where('estoque', '>', 0.00);
-        if (isset($data['has_stock']) && $data['has_stock'] == 'N')
-            $produtos->where('estoque', '<', 0.00);
-
         return $produtos;
     }
 
@@ -86,6 +77,10 @@ class EmpresaController extends Controller
         ini_set('memory_limit', '-1');
         ini_set("pcre.backtrack_limit", "5000000");
         $produtos = $this->getProdutos($empresa, request()->all())->where('ativo', 'S')->get();
+        // return view('empresas.pdfprodutos', [
+        //     'produtos' => $produtos,
+        //     'nome_empresa' => $this->e->razao
+        // ]);exit;
         $view = view('empresas.pdfprodutos', [
             'produtos' => $produtos,
             'nome_empresa' => $this->e->razao

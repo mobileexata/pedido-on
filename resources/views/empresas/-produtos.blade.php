@@ -11,26 +11,15 @@
                     <div class="card-body">
                         <form>
                             <div class="row">
-                                <div class="col-12 col-sm-6 form-group">
-                                    <label>Pesquisar produto</label>
-                                    <input type="search" name="q" class="form-control"
+                                <div class="col-12 col-sm-7 form-group">
+                                    <input type="search" name="q" class="form-control" placeholder="Pesquisar produto"
                                            value="{{ $q }}" @if(!$q) required @endif>
                                 </div>
-                                <div class="col-12 col-sm-3 form-group">
-                                    <label>Filtro de foto</label>
-                                    <select class="form-control" aria-label="Default select example" name="has_photo"  onchange="$(this).parents('form').submit()">
-                                        <option @if($has_photo != 'S' && $has_photo != 'N') selected @endif value="">Todos</option>
-                                        <option value="S" @if($has_photo == 'S') selected @endif>Produtos com foto</option>
-                                        <option value="N" @if($has_photo == 'N') selected @endif>Produtos sem foto</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-sm-3 form-group">
-                                    <label>Filtro de estoque</label>
-                                    <select class="form-control" aria-label="Default select example" name="has_stock" onchange="$(this).parents('form').submit()">
-                                        <option @if($has_stock != 'S' && $has_stock != 'N') selected @endif value="">Todos</option>
-                                        <option value="S" @if($has_stock == 'S') selected @endif>Produtos com estoque</option>
-                                        <option value="N" @if($has_stock == 'N') selected @endif>Produtos sem estoque</option>
-                                    </select>
+                                <div class="col-12 col-sm-3 form-group mt-2">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="sem_imagem" name="sem_imagem" onchange="$(this).parents('form').submit()" @if($sem_imagem == 'on') checked @endif>
+                                        <label class="custom-control-label" for="sem_imagem">Produtos sem imagem</label>
+                                    </div>
                                 </div>
                             </div>
                         </form>
