@@ -26,7 +26,10 @@ class EmpresaController extends Controller
         if (auth()->user()->user_id and auth()->user()->rotas()->count())
             $clientes->whereIn('rota_id', [auth()->user()->rotas()->select('rota_id')->distinct()->get()]);
         if (isset($data['q']))
-            $clientes->where('nome', 'like', "%{$data['q']}%")->orWhere('documento', 'like', "%{$data['q']}%");
+            $clientes->where(function ($query) use ($data) {
+                $query->where('nome', 'like', "%{$data['q']}%")
+                    ->orWhere('documento', 'like', "%{$data['q']}%");
+            });
         return view('empresas.clientes', ['clientes' => $clientes->paginate(), 'q' => $data['q'] ?? null]);
     }
 
@@ -48,20 +51,19 @@ class EmpresaController extends Controller
         $this->e = $this->findEmpresa($empresa);
         $produtos = $this->e->produtos();
         if (isset($data['q']))
-            $produtos->where('nome', 'like', "%{$data['q']}%")
-                ->orWhere('referencia', 'like', "%{$data['q']}%")
-                ->orWhere('preco', 'like', str_replace(',', '.', "%{$data['q']}%"))
-                ->orWhere('estoque', 'like', str_replace(',', '.', "%{$data['q']}%"));
-        if (isset($data['has_photo']) && $data['has_photo'] == 'N')
-            $produtos->whereNull('imagem');
-        elseif (isset($data['has_photo']) && $data['has_photo'] == 'S')
-            $produtos->whereNotNull('imagem');
+            $produtos->where(function ($query) use ($data) {
+                $query->orWhere('nome', 'like', "%{$data['q']}%")
+                    ->orWhere('referencia', 'like', "%{$data['q']}%")
+                    ->orWhere('preco', 'like', str_replace(',', '.', "%{$data['q']}%"))
+                    ->orWhere('estoque', 'like', str_replace(',', '.', "%{$data['q']}%"));
+            });
+        if (isset($data['has_photo'])) {
+            $produtos->{$data['has_photo'] == 'N' ? 'whereNull' : 'whereNotNull'}('imagem');
+        }
 
-        if (isset($data['has_stock']) && $data['has_stock'] == 'S')
-            $produtos->where('estoque', '>', 0.00);
-        if (isset($data['has_stock']) && $data['has_stock'] == 'N')
-            $produtos->where('estoque', '<', 0.00);
-
+        if (isset($data['has_stock'])) {
+            $produtos->where('estoque', $data['has_stock'] == 'S' ? '>' : '<=', 0.00);
+        }
         return $produtos;
     }
 
