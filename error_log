@@ -1,0 +1,2 @@
+[21-Jun-2022 00:59:10 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 7.3.0". You are running 7.2.34. in /home/casott44/pedido_on/vendor/composer/platform_check.php on line 24
+[21-Jun-2022 01:01:12 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 7.3.0". You are running 7.2.34. in /home/casott44/pedido_on/vendor/composer/platform_check.php on line 24

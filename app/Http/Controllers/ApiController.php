@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Cliente;
 use App\Empresa;
+use App\Fabricante;
 use App\Produto;
 use App\Rota;
 use App\TiposVenda;
 use App\User;
 use App\UsersRota;
+use Illuminate\Http\Request;
 
 class ApiController extends Controller
 {
@@ -184,6 +186,7 @@ class ApiController extends Controller
                 'ativo' => $p->ativo ?? 'N',
                 'ean' => $p->ean ?? null,
                 'referencia' => $p->referencia ?? null,
+                'fabricante_id' => $p->fabricante_id ?? null,
             ]);
         }
         return response()->json(['mensagem' => 'Produto cadastrados com sucesso']);
@@ -344,7 +347,7 @@ class ApiController extends Controller
                 $user = $this->user->users()->where('iderp', $r->idfuncionarioerp)->first();
 
                 if (!$user)
-                    continue;//return response()->json(['mensagem' => 'Funcionário não encontrado, associe o vendedor ao ERP: ' . implode(';', $r)], $this->statusError);
+                    continue; //return response()->json(['mensagem' => 'Funcionário não encontrado, associe o vendedor ao ERP: ' . implode(';', $r)], $this->statusError);
 
                 $this->usersAux[$r->idfuncionarioerp] = $user_id = $user->id;
             }
@@ -363,4 +366,39 @@ class ApiController extends Controller
         return response()->json(['mensagem' => 'Rotas associadas com sucesso']);
     }
 
+    public function fabricantes(Request $request, $token)
+    {
+        $this->setUser($token);
+
+        if (!request()->input('fabricantes'))
+            return response()->json(['mensagem' => 'Nenhum fabricante informado.'], $this->statusError);
+
+        $fabricantes = json_decode(request()->input('fabricantes'));
+
+        if (!$fabricantes)
+            return response()->json(['mensagem' => 'Nenhum fabricante informado'], $this->statusError);
+
+        foreach ($fabricantes as $f) {
+            if (!isset($f->nome) or !isset($f->iderp) or !isset($f->idempresaerp) or !$f->nome or !$f->iderp or !$f->idempresaerp)
+                return response()->json(['mensagem' => 'Fabricante inconsistente: ' . print_r($f, true)], $this->statusError);
+
+            if (isset($this->empresasAux[$f->idempresaerp]))
+                $empresa_id = $this->empresasAux[$f->idempresaerp];
+            else {
+                $empresa = $this->user->empresas()->where('iderp', $f->idempresaerp)->first();
+
+                if (!$empresa)
+                    return response()->json(['mensagem' => 'Empresa não encontrada: ' . implode(';', $f)], $this->statusError);
+
+                $this->empresasAux[$f->idempresaerp] = $empresa_id = $empresa->id;
+            }
+            Fabricante::updateOrCreate([
+                'empresa_id' => $empresa_id,
+                'iderp' => $f->iderp
+            ], [
+                'nome' => $f->nome,
+            ]);
+        }
+        return response()->json(['mensagem' => 'Fabricantes cadastrados com sucesso']);
+    }
 }

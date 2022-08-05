@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('home');
-//    return view('welcome');
+    //    return view('welcome');
 });
 
 Auth::routes();
@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('{empresa}/formas-pagamento', 'EmpresaController@tiposVendas')->name('tiposvendas');
         Route::get('{empresa}/produtos', 'EmpresaController@produtos')->name('produtos');
         Route::get('{empresa}/produtos/pdf', 'EmpresaController@produtosPdf')->name('produtos.pdf');
+        Route::get('{empresa}/fabricantes', 'EmpresaController@fabricantes')->name('fabricantes');
     });
 
     Route::resource('vendas', 'VendaController');
@@ -74,4 +75,5 @@ Route::prefix('api')->group(function () {
     Route::post('pedidos/{token}', 'ApiController@setPedidos');
     Route::post('rotas/{token}', 'ApiController@rotas');
     Route::post('rotas-funcionarios/{token}', 'ApiController@rotasFuncionarios');
+    Route::post('fabricantes/{token}', 'ApiController@fabricantes');
 });

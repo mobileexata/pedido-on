@@ -8,7 +8,7 @@ class Produto extends Model
 {
 
     protected $fillable = [
-        'empresa_id', 'nome', 'preco', 'estoque', 'iderp', 'imagem', 'ativo', 'ean', 'referencia'
+        'empresa_id', 'nome', 'preco', 'estoque', 'iderp', 'imagem', 'ativo', 'ean', 'referencia', 'fabricante_id'
     ];
 
     public function atualizaEstoque($qtd, $op = '-')

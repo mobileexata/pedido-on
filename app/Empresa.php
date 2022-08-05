@@ -36,4 +36,8 @@ class Empresa extends Model
         return $this->hasMany(Rota::class);
     }
 
+    public function fabricantes()
+    {
+        return $this->hasMany(Fabricante::class);
+    }
 }

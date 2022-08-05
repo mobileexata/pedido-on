@@ -42,29 +42,54 @@ class EmpresaController extends Controller
             'produtos' => $produtos->paginate(),
             'q' => $data['q'] ?? null,
             'has_photo' => $data['has_photo'] ?? null,
-            'has_stock' => $data['has_stock'] ?? null
+            'has_stock' => $data['has_stock'] ?? null,
+            'fabricantes' => $this->getfabricantes($empresa, $data)->get()
+        ]);
+    }
+
+    public function fabricantes($empresa)
+    {
+        $data = request()->all();
+        $fabricantes = $this->getFabricantes($empresa, $data);
+        return view('empresas.fabricantes', [
+            'empresa' => $empresa,
+            'fabricantes' => $fabricantes->paginate(),
+            'q' => $data['q'] ?? null
         ]);
     }
 
     private function getProdutos($empresa, $data)
     {
         $this->e = $this->findEmpresa($empresa);
-        $produtos = $this->e->produtos();
-        if (isset($data['q']))
-            $produtos->where(function ($query) use ($data) {
-                $query->orWhere('nome', 'like', "%{$data['q']}%")
-                    ->orWhere('referencia', 'like', "%{$data['q']}%")
-                    ->orWhere('preco', 'like', str_replace(',', '.', "%{$data['q']}%"))
-                    ->orWhere('estoque', 'like', str_replace(',', '.', "%{$data['q']}%"));
+        return $this->e
+            ->produtos()
+            ->when(isset($data['q']), function ($query) use ($data) {
+                return $query->where(function ($query) use ($data) {
+                    return $query->orWhere('nome', 'like', "%{$data['q']}%")
+                        ->orWhere('referencia', 'like', "%{$data['q']}%")
+                        ->orWhere('preco', 'like', str_replace(',', '.', "%{$data['q']}%"))
+                        ->orWhere('estoque', 'like', str_replace(',', '.', "%{$data['q']}%"));
+                });
+            })
+            ->when(isset($data['has_photo']), function ($query) use ($data) {
+                return $query->{$data['has_photo'] == 'N' ? 'whereNull' : 'whereNotNull'}('imagem');
+            })
+            ->when(isset($data['has_stock']), function ($query) use ($data) {
+                return $query->where('estoque', $data['has_stock'] == 'S' ? '>' : '<=', 0.00);
+            })
+            ->when(isset($data['fabricante']), function ($query) use ($data) {
+                return $query->where('fabricante_id', $data['fabricante']);
             });
-        if (isset($data['has_photo'])) {
-            $produtos->{$data['has_photo'] == 'N' ? 'whereNull' : 'whereNotNull'}('imagem');
-        }
+    }
 
-        if (isset($data['has_stock'])) {
-            $produtos->where('estoque', $data['has_stock'] == 'S' ? '>' : '<=', 0.00);
-        }
-        return $produtos;
+    private function getfabricantes($empresa, $data)
+    {
+        $this->e = $this->findEmpresa($empresa);
+        return $this->e
+            ->fabricantes()
+            ->when(isset($data['q']), function ($query) use ($data) {
+                return $query->where('nome', 'like', "%{$data['q']}%");
+            });
     }
 
     public function tiposVendas($empresa)
