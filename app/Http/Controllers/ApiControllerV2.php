@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Cliente;
 use App\Empresa;
-use App\Http\Requests\Api\ClientesRequest;
-use App\Http\Requests\Api\EmpresasRequest;
+use App\Http\Requests\ClientesRequest;
+use App\Http\Requests\EmpresasRequest;
 use Illuminate\Http\Response;
 
 class ApiControllerV2 extends Controller
