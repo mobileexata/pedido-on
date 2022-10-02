@@ -2,21 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Cliente;
 use App\Empresa;
-use App\Fabricante;
 use App\Http\Requests\Api\ClientesRequest;
 use App\Http\Requests\Api\EmpresasRequest;
-use App\Produto;
-use App\Rota;
-use App\TiposVenda;
-use App\User;
-use App\UsersRota;
-use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class ApiController extends Controller
+class ApiControllerV2 extends Controller
 {
     public function empresas(EmpresasRequest $request)
     {
