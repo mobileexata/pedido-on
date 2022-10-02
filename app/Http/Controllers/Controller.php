@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -15,6 +16,17 @@ class Controller extends BaseController
     protected function trataFloat($num)
     {
         return str_replace(['.', ','], ['', '.'], $num);
+    }
+
+    protected function returnResponseError(Exception $e, string $message = null)
+    {
+        $response = ['error' => $e->getMessage()];
+
+        if ($message) {
+            $response['message'] = $message;
+        }
+
+        return response()->json($response, 500);
     }
 
 }
