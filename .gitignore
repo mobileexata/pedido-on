@@ -16,3 +16,4 @@ bower_components/
 
 *.zip
 .editorconfig
+.history
