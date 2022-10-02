@@ -8,9 +8,29 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use PDF;
 
+use function PHPSTORM_META\type;
+
 class EmpresaController extends Controller
 {
-
+    const ORDERS = [
+        1 => [
+            'column' => 'produtos.iderp',
+            'text' => 'Cód. Produto (Menor/Maior)'
+        ],
+        2 => [
+            'column' => 'produtos.iderp',
+            'type' => 'desc',
+            'text' => 'Cód. Produto (Maior/Menor)'
+        ],
+        3 => [
+            'column' => 'produtos.nome',
+            'text' => 'Produto (Ordem alfabética)'
+        ],
+        /*4 => [
+            'column' => 'fabricantes.nome',
+            'text' => 'Fabricante (Ordem alfabética)'
+        ]*/
+    ];
     private $e;
 
     public function index()
@@ -43,7 +63,9 @@ class EmpresaController extends Controller
             'q' => $data['q'] ?? null,
             'has_photo' => $data['has_photo'] ?? null,
             'has_stock' => $data['has_stock'] ?? null,
-            'fabricantes' => $this->getfabricantes($empresa, $data)->get()
+            'fabricantes' => $this->getfabricantes($empresa, $data)->get(),
+            'orders' => self::ORDERS,
+            'order' => $data['order'] ?? null
         ]);
     }
 
@@ -68,7 +90,8 @@ class EmpresaController extends Controller
                     return $query->orWhere('nome', 'like', "%{$data['q']}%")
                         ->orWhere('referencia', 'like', "%{$data['q']}%")
                         ->orWhere('preco', 'like', str_replace(',', '.', "%{$data['q']}%"))
-                        ->orWhere('estoque', 'like', str_replace(',', '.', "%{$data['q']}%"));
+                        ->orWhere('estoque', 'like', str_replace(',', '.', "%{$data['q']}%"))
+                        ->orWhere('iderp', 'like', "%{$data['q']}%");
                 });
             })
             ->when(isset($data['has_photo']), function ($query) use ($data) {
@@ -79,6 +102,11 @@ class EmpresaController extends Controller
             })
             ->when(isset($data['fabricante']), function ($query) use ($data) {
                 return $query->where('fabricante_id', $data['fabricante']);
+            })->when(isset($data['order']), function ($query) use ($data) {
+                if (!isset(self::ORDERS[$data['order']])) {
+                    $data['order'] = 1;
+                } 
+                return $query->orderBy(self::ORDERS[$data['order']]['column'], self::ORDERS[$data['order']]['type'] ?? 'asc');
             });
     }
 
@@ -115,9 +143,65 @@ class EmpresaController extends Controller
         $produtos = $this->getProdutos($empresa, request()->all())->where('ativo', 'S')->get();
         $view = view('empresas.pdfprodutos', [
             'produtos' => $produtos,
-            'nome_empresa' => $this->e->razao
+            'nome_empresa' => $this->e->razao,
+            'estoque' => (int)request()->input('estoque', 1)
         ])->render();
         $pdf = PDF::loadHtml($view);
         return $pdf->stream('produtos-' . $this->e->fantasia . '-' . time() . '.pdf');
     }
+
+    public function fabricantesProdutosPdf(Request $request, $empresa)
+    {
+        ini_set('max_execution_time', '3000');
+        ini_set('memory_limit', '-1');
+        ini_set("pcre.backtrack_limit", "5000000");
+        $this->e = $this->findEmpresa($empresa);
+        $fabricantes = $this
+            ->e
+            ->fabricantes()
+            ->when($request->get('fabricante'), function ($query) use ($request) {
+                return $query->where('id', $request->get('fabricante'));
+            })
+            ->get()
+            ->map(function ($fabricante) use ($request) {
+                $query_string = $request->get('q');
+
+                return [
+                    "iderp" => $fabricante->iderp,
+                    "nome" => $fabricante->nome,
+                    "produtos" => $fabricante
+                        ->produtos()
+                        ->where('ativo', 'S')
+                        ->when($query_string, function ($query) use ($query_string) {
+                            return $query->where(function ($query) use ($query_string) {
+                                return $query->orWhere('nome', 'like', "%$query_string%")
+                                    ->orWhere('referencia', 'like', "%$query_string%")
+                                    ->orWhere('preco', 'like', str_replace(',', '.', "%$query_string%"))
+                                    ->orWhere('estoque', 'like', str_replace(',', '.', "%$query_string%"))
+                                    ->orWhere('iderp', 'like', "%$query_string%");
+                            });
+                        })
+                        ->when($request->get('has_photo', false), function ($query) use ($request) {
+                            return $query->{$request->get('has_photo') == 'N' ? 'whereNull' : 'whereNotNull'}('imagem');
+                        })
+                        ->when($request->get('has_stock', false), function ($query) use ($request) {
+                            return $query->where('estoque', $request->get('has_stock') == 'S' ? '>' : '<=', 0.00);
+                        })->when($request->get('order', false), function ($query) use ($request) {
+                            if (!isset(self::ORDERS[$request->get('order')])) {
+                                return $query->orderBy(self::ORDERS[1]['column'], 'asc');
+                            } 
+                            return $query->orderBy(self::ORDERS[$request->get('order')]['column'], self::ORDERS[$request->get('order')]['type'] ?? 'asc');
+                        })
+                        ->get()
+                ];
+            });
+        $view = view('empresas.pdffabricantes', [
+            'fabricantes' => $fabricantes,
+            'nome_empresa' => $this->e->razao,
+            'estoque' => (int) $request->get('estoque', 1)
+        ])->render();
+        $pdf = PDF::loadHtml($view);
+        return $pdf->stream('fabricantes-produtos-' . $this->e->fantasia . '-' . time() . '.pdf');
+    }
+
 }

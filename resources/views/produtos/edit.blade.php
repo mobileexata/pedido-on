@@ -5,7 +5,7 @@
             <div class="col-6">
                 <div class="card">
                     <div class="card-header">
-                        <h6 class="card-title font-weight-bold d-inline-block ">{{ $produto->nome }}</h6>
+                        <h6 class="card-title font-weight-bold d-inline-block ">{{ $produto->iderp }} - {{ $produto->nome }}</h6>
                         <a class="float-right btn btn-sm btn-primary" href="{{ back()->getTargetUrl() }}">Voltar</a>
                     </div>
                     <div class="card-body">

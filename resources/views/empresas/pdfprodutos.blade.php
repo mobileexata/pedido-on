@@ -54,7 +54,9 @@
         <th>Foto</th>
         <th>Ref.</th>
         <th>Produto</th>
+        @if($estoque == 1)
         <th>Estoque</th>
+        @endif
         <th>Preço</th>
     </tr>
     <tbody>
@@ -67,13 +69,15 @@
                 {{ $p->referencia }}
             </td>
             <td>
-                {{ $p->nome }}
+                {{ $p->iderp }} - {{ $p->nome }}
             </td>
+            @if($estoque == 1)
             <td class="text-right">
                 <span @if((float)$p->estoque < 0.00) class="text-danger" @endif>
                     {{ number_format($p->estoque, 0, ',', '.') }}
                 </span>
             </td>
+            @endif
             <td class="text-right">
                 R$ {{ number_format($p->preco, 2, ',', '.') }}
             </td>

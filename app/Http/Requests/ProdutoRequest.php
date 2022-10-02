@@ -24,8 +24,8 @@ class ProdutoRequest extends FormRequest
     public function rules()
     {
         return [
-            'imagem' => 'required',
-            'imagem.*' => ['image', 'max:2048', 'mimes:jpeg,png,jpg,gif,svg']
+            'imagem' => ['required', 'image', 'max:2048', 'mimes:jpeg,png,jpg,gif,svg'],
+            'imagem.*' => ['required', 'image', 'max:2048', 'mimes:jpeg,png,jpg,gif,svg']
         ];
     }
 

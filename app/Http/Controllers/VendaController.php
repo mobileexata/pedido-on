@@ -6,32 +6,48 @@ use App\Http\Requests\VendaRequest;
 use App\Venda;
 use PDF;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class VendaController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = request()->all();
-        $vendas = auth()->user()->vendas()->orderByDesc('created_at');
-        if (isset($data['q']))
-            $vendas->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('clientes')
-                    ->whereColumn('vendas.cliente_id', 'clientes.id')
-                    ->where('clientes.nome', 'like', "%" . request('q') . "%")
-                    ->orWhere('clientes.documento', 'like', "%" . request('q') . "%");
-            });
-        if (!isset($data['data_inicial']) and !isset($data['data_final'])) {
-            $data['data_inicial'] = date('Y-m-d');
-            $data['data_final'] = date('Y-m-d');
+        $query_param_search = $request->get('q');
+        $data_inicial = $request->get('data_inicial');
+        $data_final = $request->get('data_final');
+        if (empty($data_inicial)) {
+            $data_inicial = now()->subMonth()->format('Y-m-d');
         }
-        $vendas->whereBetween('vendas.created_at', [$data['data_inicial'] . ' 00:00:00', $data['data_final'] . ' 23:59:59']);
+        if (empty($data_final)) {
+            $data_final = now()->format('Y-m-d');
+        }
+        $vendas = auth()
+            ->user()
+            ->vendas()
+            ->orderByDesc('created_at')
+            ->when(!empty($query_param_search), function ($query) use ($query_param_search) {
+                return $query->whereExists(function ($query) use ($query_param_search) {
+                    $query->select(DB::raw(1))
+                        ->from('clientes')
+                        ->whereColumn('vendas.cliente_id', 'clientes.id')
+                        ->where('clientes.nome', 'like', "%$query_param_search%")
+                        ->orWhere('clientes.documento', 'like', "%$query_param_search %");
+                });
+            })
+            ->whereBetween('vendas.created_at', [
+                $data_inicial . ' 00:00:00',
+                $data_final . ' 23:59:59'
+                ])
+            ->when($request->get('pendente_importacao') == 'on', function ($query) {
+                $query->whereNull('vendas.iderp');
+            });
         return view('vendas.index', [
             'vendas' => $vendas->paginate(),
-            'q' => $data['q'] ?? null,
-            'data_inicial' => $data['data_inicial'] ?? null,
-            'data_final' => $data['data_final'] ?? null,
+            'q' => $request->get('q'),
+            'data_inicial' => $request->get('data_inicial'),
+            'data_final' => $request->get('data_final'),
+            'pendente_importacao' => $request->get('pendente_importacao'),
         ]);
     }
 
@@ -94,11 +110,12 @@ class VendaController extends Controller
         $empresa = auth()->user()->empresas()->findOrFail($empresa);
         $produtos = $empresa->produtos()->where('ativo', 'S')->take(50);
         if (isset($request['q']) and $request['q'])
-            $produtos
-                ->where('nome', 'like', "%{$request['q']}%")
-                ->orWhere('referencia', 'like', "%{$request['q']}%")
-                ->orWhere('iderp', 'like', "%{$request['q']}%")
-                ->orWhere('ean', 'like', "%{$request['q']}%");
+            $produtos->where(function ($query) use ($request) {
+                return $query->orWhere('referencia', 'like', "%{$request['q']}%")
+                    ->orWhere('nome', 'like', "%{$request['q']}%")
+                    ->orWhere('iderp', 'like', "%{$request['q']}%")
+                    ->orWhere('ean', 'like', "%{$request['q']}%");
+                });
 
         $prod = $produtos->get();
         if ($prod->count()) {

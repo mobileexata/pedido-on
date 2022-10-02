@@ -19,4 +19,9 @@ class Produto extends Model
             $this->estoque += $qtd;
         $this->save();
     }
+
+    public function getImageAttribute()
+    {
+        return $this->imagem ?  public_path('produtos/' . $this->imagem) : public_path('images/no_photo.png');
+    }
 }

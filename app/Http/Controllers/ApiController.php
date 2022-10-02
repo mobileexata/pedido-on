@@ -165,19 +165,25 @@ class ApiController extends Controller
             if (!isset($p->nome) or !isset($p->iderp) or !isset($p->idempresaerp) or !isset($p->preco) or !isset($p->estoque) or !$p->nome or !$p->iderp or !$p->idempresaerp)
                 return response()->json(['mensagem' => 'Produto de venda inconsistente: ' . print_r($p, true)], $this->statusError);
 
-            if (isset($this->empresasAux[$p->idempresaerp]))
-                $empresa_id = $this->empresasAux[$p->idempresaerp];
-            else {
-                $empresa = $this->user->empresas()->where('iderp', $p->idempresaerp)->first();
+            $empresa = $this->user->empresas()->where('iderp', $p->idempresaerp)->first();
 
-                if (!$empresa)
-                    return response()->json(['mensagem' => 'Empresa não encontrada: ' . implode(';', $p)], $this->statusError);
+            if (!$empresa)
+                return response()->json(['mensagem' => 'Empresa não encontrada: ' . implode(';', $p)], $this->statusError);
 
-                $this->empresasAux[$p->idempresaerp] = $empresa_id = $empresa->id;
+            $fabricante_id = null;
+            if ($p->fabricante_id) {
+                $fabricante = $empresa->fabricantes->where('iderp', $p->fabricante_id)->first();
+                
+                if (!$fabricante) {
+                    return response()->json(['mensagem' => "fabricante não encontrado iderp recebido: {$p->fabricante_id}"], $this->statusError);
+                }
+                
+                $fabricante_id = $fabricante->id;
             }
+            
 
             Produto::updateOrCreate([
-                'empresa_id' => $empresa_id,
+                'empresa_id' => $empresa->id,
                 'iderp' => $p->iderp
             ], [
                 'nome' => $p->nome,
@@ -186,7 +192,7 @@ class ApiController extends Controller
                 'ativo' => $p->ativo ?? 'N',
                 'ean' => $p->ean ?? null,
                 'referencia' => $p->referencia ?? null,
-                'fabricante_id' => $p->fabricante_id ?? null,
+                'fabricante_id' => $fabricante_id,
             ]);
         }
         return response()->json(['mensagem' => 'Produto cadastrados com sucesso']);

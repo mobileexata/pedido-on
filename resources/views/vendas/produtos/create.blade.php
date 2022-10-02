@@ -3,7 +3,7 @@
     <input type="hidden" name="venda_id" value="{{ $venda->id }}">
     <input type="hidden" name="nome" value="">
     <div class="row">
-        <div class="col-12 col-sm-6 form-group">
+        <div class="col-12 col-sm-10 form-group">
             <label for="produto_id">
                 Produto
             </label>

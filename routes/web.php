@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('{empresa}/formas-pagamento', 'EmpresaController@tiposVendas')->name('tiposvendas');
         Route::get('{empresa}/produtos', 'EmpresaController@produtos')->name('produtos');
         Route::get('{empresa}/produtos/pdf', 'EmpresaController@produtosPdf')->name('produtos.pdf');
+        Route::get('{empresa}/produtos/fabricantes-pdf', 'EmpresaController@fabricantesProdutosPdf')->name('fabricantes.pdf');
         Route::get('{empresa}/fabricantes', 'EmpresaController@fabricantes')->name('fabricantes');
     });
 

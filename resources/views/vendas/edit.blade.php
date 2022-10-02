@@ -55,7 +55,7 @@
                                 <select name="tiposvenda_id" id="tiposvenda_id"
                                         class="select2 @error('tiposvenda_id') is-invalid @enderror"
                                         style="width: 100%;">
-                                    @foreach(auth()->user()->empresas()->findOrFail($venda->empresa_id)->tiposVendas()->get() as $t)
+                                    @foreach(auth()->user()->empresas()->findOrFail($venda->empresa_id)->tiposVendas()->where('ativo', 'S')->get() as $t)
                                         <option value="{{ $t->id }}"
                                                 @if($venda->tiposvenda_id == $t->id) selected @endif> {{ $t->nome }}</option>
                                     @endforeach

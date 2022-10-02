@@ -6,9 +6,20 @@
                 <div class="card">
                     <div class="card-header">
                         <span>{{ __('Produtos') }}</span>
-                        <span class="float-right"><a
-                                href="{{ route('empresas.produtos.pdf', ['empresa' => $empresa]) . '?' . http_build_query(request()->except('page')) }}"
-                                target="_blank" class="btn btn-primary btn-sm">{{ __('Gerar PDF') }}</a></span>
+                        <span class="float-right">
+                        <div class="btn-group" role="group" aria-label="{{ __('Gerar PDF') }}">
+                            <div class="btn-group" role="group">
+                                <button id="drop-down-pdf" type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{ __('Gerar PDF') }}
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="drop-down-pdf">
+                                    <a class="dropdown-item" href="{{ route('empresas.produtos.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 1])) }}" target="_blank">Com informação de estoque</a>
+                                    <a class="dropdown-item" href="{{ route('empresas.produtos.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 2])) }}" target="_blank">Sem informação de estoque</a>
+                                    <a class="dropdown-item" href="{{ route('empresas.fabricantes.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 1])) }}" target="_blank">Agrupado por fabricante com informação de estoque</a>
+                                    <a class="dropdown-item" href="{{ route('empresas.fabricantes.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 2])) }}" target="_blank">Agrupado por fabricante sem informação de estoque</a>
+                                </div>
+                            </div>
+                        </div>    
                     </div>
                     <div class="card-body">
                         <form>
@@ -20,7 +31,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-12 col-sm-4 form-group">
+                                <div class="col-12 col-sm-3 form-group">
                                     <label>Filtro de foto</label>
                                     <select class="form-control" aria-label="Default select example" name="has_photo"
                                         onchange="$(this).parents('form').submit()">
@@ -32,7 +43,7 @@
                                             sem foto</option>
                                     </select>
                                 </div>
-                                <div class="col-12 col-sm-4 form-group">
+                                <div class="col-12 col-sm-3 form-group">
                                     <label>Filtro de estoque</label>
                                     <select class="form-control" name="has_stock"
                                         onchange="$(this).parents('form').submit()">
@@ -44,7 +55,7 @@
                                             sem estoque</option>
                                     </select>
                                 </div>
-                                <div class="col-12 col-sm-4 form-group">
+                                <div class="col-12 col-sm-3 form-group">
                                     <label>Filtro de fabricante</label>
                                     <select class="form-control" name="fabricante"
                                         onchange="$(this).parents('form').submit()">
@@ -52,6 +63,17 @@
                                         @foreach ($fabricantes as $fabricante)
                                             <option value="{{ $fabricante->id }}"
                                                 @if (request()->get('fabricante') == $fabricante->id) selected @endif>{{ $fabricante->nome }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-12 col-sm-3 form-group">
+                                    <label>Ordem</label>
+                                    <select class="form-control" name="order"
+                                        onchange="$(this).parents('form').submit()">
+                                        @foreach ($orders as $order_id => $order)
+                                            <option value="{{ $order_id }}"
+                                                @if (request()->get('order') == $order_id) selected @endif>{{ $order['text'] }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -86,7 +108,7 @@
                                                     class="rounded" style="width: 50px; max-height: 100px">
                                             </div>
                                             <div class="col-10 col-sm-5">
-                                                <h6>{{ $p->nome }}</h6>
+                                                <h6>{{ $p->iderp }} - {{ $p->nome }}</h6>
                                             </div>
                                             <div class="col-4 col-sm-2">
                                                 <span>{{ $p->referencia }}</span>

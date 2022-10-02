@@ -24,7 +24,7 @@
                 <div class="card-body">
                     <form>
                         <div class="row">
-                            <div class="col-12 col-sm-6 form-group">
+                            <div class="col-12 col-sm-4 form-group">
                                 @if(Agent::isMobile())<label>Pesquisar</label>@endif
                                 <input type="search" name="q" class="form-control" placeholder="Pesquisar pedido"
                                         value="{{ $q }}" @if(!$q) required @endif>
@@ -36,6 +36,10 @@
                             <div class="col-12 col-sm-3 form-group">
                                 @if(Agent::isMobile())<label>Período final</label>@endif
                                 <input type="date" name="data_final" class="form-control" value="{{ $data_final }}"  data-toggle="tooltip" ref="tooltip" title="Selecione o período" onchange="$(this).parents('form').submit()">
+                            </div>
+                            <div class="col-12 col-sm-2 form-group form-check">
+                                <input type="checkbox" class="form-check-input" name="pendente_importacao" id="pendente_importacao" onchange="$(this).parents('form').submit()" {{ $pendente_importacao == 'on' ? 'checked="checked"' : '' }}>
+                                <label class="form-check-label" for="pendente_importacao">Pendente importação</label>
                             </div>
                         </div>
                     </form>
