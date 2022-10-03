@@ -24,10 +24,10 @@ class EmpresasRequest extends FormRequest
     public function rules()
     {
         return [
-            '*.iderp' => ['required', 'integer'],
-            '*.razao' => ['required', 'string', 'max:191'],
-            '*.fantasia' => ['required', 'string', 'max:191'],
-            '*.cnpj' => ['required', 'string', 'max:191'],
+            '*.iderp'    => 'required|integer',
+            '*.cnpj'     => 'required|string|max:191',
+            '*.razao'    => 'required|string|max:191',
+            '*.fantasia' => 'required|string|max:191',
         ];
     }
 }

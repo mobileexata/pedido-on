@@ -12,26 +12,18 @@ use Illuminate\Http\Response;
 
 class ApiControllerV2 extends Controller
 {
-    public function empresas(Request $request)
+    public function empresas(EmpresasRequest $request)
     {
-        $request->validate([
-            'empresas' => 'required|array',
-            'empresas.*.iderp' => 'required|integer',
-            'empresas.*.razao' => 'required|string|max:191',
-            'empresas.*.fantasia' => 'required|string|max:191',
-            'empresas.*.cnpj' => 'required|string|max:191',
-        ]);
-
         try {
             foreach ($request->all() as $e) {
-                Empresa::updateOrCreate([
+                $request->user()->empresas->updateOrCreate([
                     'iderp' => $e->iderp,
                     'user_id' => $request->user()->id
                 ], [
-                    'razao' => $e->razao,
-                    'fantasia' => $e->fantasia,
                     'cnpj' => $e->cnpj,
                     'iderp' => $e->iderp,
+                    'razao' => $e->razao,
+                    'fantasia' => $e->fantasia,
                     'user_id' => $request->user()->id
                 ]);
             }
