@@ -16,7 +16,7 @@ class ApiControllerV2 extends Controller
     {
         try {
             $data = $request->all();
-            echo $data;
+            print_r($data);
             foreach ($data as $e) {
                 $res = $request->user()->empresas->updateOrCreate([
                     'iderp' => $e['iderp'],
