@@ -17,7 +17,6 @@ class ApiControllerV2 extends Controller
         try {
             $data = $request->all();
             foreach ($data as $e) {
-                dd($e);
                 $res = $request->user()->empresas()->updateOrCreate([
                     'iderp' => $e['iderp'],
                     'user_id' => $request->user()->id
@@ -28,6 +27,7 @@ class ApiControllerV2 extends Controller
                     'iderp' => $e['iderp'],
                     'user_id' => $request->user()->id
                 ]);
+                dd($res);
             }
             return response()->json(null, Response::HTTP_CREATED);
         } catch (Exception $e) {
