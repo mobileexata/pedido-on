@@ -15,6 +15,7 @@ class ApiControllerV2 extends Controller
     public function empresas(EmpresasRequest $request)
     {
         try {
+            dd($request->all());
             foreach ($request->all() as $e) {
                 $res = $request->user->empresas->updateOrCreate([
                     'iderp' => $e->iderp,
