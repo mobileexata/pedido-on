@@ -36,7 +36,6 @@ class ApiControllerV2 extends Controller
             }
             return response()->json(null, Response::HTTP_CREATED);
         } catch (Exception $e) {
-            dd($request, $e, $request->all());
             $this->returnResponseError($e, 'error creating empresas');
         }
     }
