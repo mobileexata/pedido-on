@@ -20,11 +20,13 @@ class AuthApiV2
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!$request->get('token')) {
+        $token = $request->get('token');
+        
+        if (!$token) {
             return response()->json(['error' => 'invalid token'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $user = User::where('user_token', $request->get('token'))->first();
+        $user = User::where('user_token', $token)->first();
         if (!$user) {
             return response()->json(['error' => 'user not found'], Response::HTTP_UNAUTHORIZED);
         }
