@@ -12,16 +12,9 @@ use Illuminate\Http\Response;
 
 class ApiControllerV2 extends Controller
 {
-    public function empresas(Request $request)
+    public function empresas(EmpresasRequest $request)
     {
         try {
-        $request->validate([
-            '*.iderp' => 'required|integer',
-            '*.razao' => 'required|string|max:191',
-            '*.fantasia' => 'required|string|max:191',
-            '*.cnpj' => 'required|string|max:191',
-        ]);
-
             foreach ($request->all() as $e) {
                 $request->user->empresas->updateOrCreate([
                     'iderp' => $e->iderp,
