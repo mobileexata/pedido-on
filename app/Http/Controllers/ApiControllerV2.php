@@ -14,12 +14,12 @@ class ApiControllerV2 extends Controller
 {
     public function empresas(Request $request)
     {
-        $request->validate([
-            '*.iderp' => ['required', 'integer'],
-            '*.razao' => ['required', 'string', 'max:191'],
-            '*.fantasia' => ['required', 'string', 'max:191'],
-            '*.cnpj' => ['required', 'string', 'max:191'],
-        ]);
+        // $request->validate([
+        //     '*.iderp' => ['required', 'integer'],
+        //     '*.razao' => ['required', 'string', 'max:191'],
+        //     '*.fantasia' => ['required', 'string', 'max:191'],
+        //     '*.cnpj' => ['required', 'string', 'max:191'],
+        // ]);
 
         try {
             foreach ($request->all() as $e) {
