@@ -15,10 +15,11 @@ class ApiControllerV2 extends Controller
     public function empresas(Request $request)
     {
         $request->validate([
-            '*.iderp' => 'required|integer',
-            '*.razao' => 'required|string|max:191',
-            '*.fantasia' => 'required|string|max:191',
-            '*.cnpj' => 'required|string|max:191',
+            'empresas' => 'required|array',
+            'empresas.*.iderp' => 'required|integer',
+            'empresas.*.razao' => 'required|string|max:191',
+            'empresas.*.fantasia' => 'required|string|max:191',
+            'empresas.*.cnpj' => 'required|string|max:191',
         ]);
 
         try {
