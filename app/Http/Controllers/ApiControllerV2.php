@@ -12,23 +12,31 @@ use Illuminate\Http\Response;
 
 class ApiControllerV2 extends Controller
 {
-    public function empresas(EmpresasRequest $request)
+    public function empresas(Request $request)
     {
         try {
+        $request->validate([
+            '*.iderp' => 'required|integer',
+            '*.razao' => 'required|string|max:191',
+            '*.fantasia' => 'required|string|max:191',
+            '*.cnpj' => 'required|string|max:191',
+        ]);
+
             foreach ($request->all() as $e) {
-                $request->user()->empresas->updateOrCreate([
+                $request->user->empresas->updateOrCreate([
                     'iderp' => $e->iderp,
                     'user_id' => $request->user()->id
                 ], [
-                    'cnpj' => $e->cnpj,
-                    'iderp' => $e->iderp,
                     'razao' => $e->razao,
                     'fantasia' => $e->fantasia,
+                    'cnpj' => $e->cnpj,
+                    'iderp' => $e->iderp,
                     'user_id' => $request->user()->id
                 ]);
             }
             return response()->json(null, Response::HTTP_CREATED);
         } catch (Exception $e) {
+            dd($e);
             $this->returnResponseError($e, 'error creating empresas');
         }
     }
