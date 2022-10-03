@@ -15,16 +15,15 @@ class ApiControllerV2 extends Controller
     public function empresas(EmpresasRequest $request)
     {
         try {
-            dd($request->all());
             foreach ($request->all() as $e) {
                 $res = $request->user->empresas->updateOrCreate([
-                    'iderp' => $e->iderp,
+                    'iderp' => $e['iderp'],
                     'user_id' => $request->user()->id
                 ], [
-                    'razao' => $e->razao,
-                    'fantasia' => $e->fantasia,
-                    'cnpj' => $e->cnpj,
-                    'iderp' => $e->iderp,
+                    'razao' => $e['razao'],
+                    'fantasia' => $e['fantasia'],
+                    'cnpj' => $e['cnpj'],
+                    'iderp' => $e['iderp'],
                     'user_id' => $request->user()->id
                 ]);
                 dd($e, $res);
