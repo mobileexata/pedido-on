@@ -79,7 +79,7 @@ Route::prefix('api')->group(function () {
     Route::post('fabricantes/{token}', 'ApiController@fabricantes');
 
 
-    Route::prefix('v2')->middleware('mdv2')->group(function () {
+    Route::prefix('v2')/*->middleware('mdv2')*/->group(function () {
         Route::get('', function () {
             return response()->json(['mensagem' => 'Connected']);
         });
