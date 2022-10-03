@@ -18,7 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::prefix('v2')->middleware('api.v2')->group(function () {
+Route::prefix('v2')->middleware('mdv2')->group(function () {
     Route::get('', function () {
         return response()->json(['mensagem' => 'Connected']);
     });
