@@ -56,7 +56,7 @@
                                                     </h6>
                                                 </div>
                                                 <div class="col-2">
-                                                    <span class="float-right"><b>Pedido: </b><span>{{ $v->iderp ?? 'Pendente' }}</span></span>
+                                                    <span class="float-right"><b>Pedido: </b><span>{{ ($v->concluida == 'N' ? 'Não finalizado' : ($v->iderp ?? 'Pendente importação')) }}</span></span>
                                                 </div>
                                                 @if(Agent::isMobile())
                                                     <div class="col-12">
