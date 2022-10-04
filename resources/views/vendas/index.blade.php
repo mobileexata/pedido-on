@@ -55,7 +55,7 @@
                                                         {{ $v->cliente()->first()->nome }}
                                                     </h6>
                                                 </div>
-                                                <div class="col-2 col-sm-9">
+                                                <div class="col-2 col-sm-3">
                                                     <span class="float-right"><b>Pedido: </b><span>{{ ($v->concluida == 'N' ? 'Não finalizado' : ($v->iderp ?? 'Pendente importação')) }}</span></span>
                                                 </div>
                                                 @if(Agent::isMobile())
