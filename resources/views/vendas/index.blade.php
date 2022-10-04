@@ -50,12 +50,12 @@
                                     <div class="row">
                                         <div class="col-10">
                                             <div class="row">
-                                                <div class="col-10 col-sm-9">
+                                                <div class="col-6 col-sm-8">
                                                     <h6 class="mb-1 font-weight-bold text-uppercase">
                                                         {{ $v->cliente()->first()->nome }}
                                                     </h6>
                                                 </div>
-                                                <div class="col-2 col-sm-3">
+                                                <div class="col-6 col-sm-4">
                                                     <span class="float-right"><b>Pedido: </b><span>{{ ($v->concluida == 'N' ? 'Não finalizado' : ($v->iderp ?? 'Pendente importação')) }}</span></span>
                                                 </div>
                                                 @if(Agent::isMobile())
