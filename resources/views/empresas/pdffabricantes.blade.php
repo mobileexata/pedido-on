@@ -67,7 +67,7 @@
         <tr>
             <td colspan="2">
                 @if($f['produtos']->count())
-                    <table class="w-100" cellpadding="2px" cellspacing="0">
+                    <table cellpadding="2px" cellspacing="0">
                         <tr>
                             <th>Foto</th>
                             <th>Ref.</th>
