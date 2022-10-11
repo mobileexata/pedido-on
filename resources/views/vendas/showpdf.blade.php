@@ -71,7 +71,7 @@
     <tbody>
     @foreach($venda->produtos()->get() as $p)
         <tr>
-            <td class="td-border">{{ $p->produtos()->produto()->first()->iderp }} - {{ $p->nome }}</td>
+            <td class="td-border">{{ $p->produto()->first()->iderp }} - {{ $p->nome }}</td>
             <td class="text-right td-border">{{ number_format($p->quantidade, 0, ',', '.') }}</td>
             <td class="text-right td-border">{{ number_format($p->preco, 2, ',', '.') }}</td>
             <td class="text-right td-border">{{ number_format($p->desconto > 0.00 ? $p->desconto * -1 : $p->acrescimo, 2, ',', '.') }}</td>

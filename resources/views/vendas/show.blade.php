@@ -92,7 +92,7 @@
                                             <img src="@if($p->produto()->first()->imagem){{ asset('produtos/' . $p->produto()->first()->imagem) }}@else {{ asset('images/no_photo.png') }}@endif" class="rounded" style="width: 50px; max-height: 100px; margin-left: -10px;">
                                         </div>
                                         <div class="col-9 col-sm-4">
-                                            <h6 class="mb-1 font-weight-bold">{{ $p->iderp }} - {{ $p->nome }}</h6>
+                                            <h6 class="mb-1 font-weight-bold">{{ $p->produto()->first()->iderp }} - {{ $p->nome }}</h6>
                                         </div>
                                         <div class="col-6 col-sm-1 text-right">
                                             {{ number_format($p->quantidade, 0, ',', '.') }}
