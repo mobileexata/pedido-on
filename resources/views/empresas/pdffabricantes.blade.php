@@ -49,9 +49,8 @@
     </tr>
 </table>
 <hr>
-<p>ID - Nome</p>
 @foreach($fabricantes as $f)
-    <p>{{ $f['iderp'] }} - {{ $f['nome'] }}</p>
+    <h2>{{ $f['iderp'] }} - {{ $f['nome'] }}</h2>
     @if($f['produtos']->count())
         <table class="w-100" cellpadding="2px" cellspacing="0">
             <tr>
