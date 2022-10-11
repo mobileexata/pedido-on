@@ -35,7 +35,7 @@
 </div>
 <table class="w-100">
     <tr>
-        <td class="text-left" ><b>Empresa:</b> {{ $venda->empresa()->first()->razao }}</td>
+        <td class="text-left" ><b>Empresa:</b> {{ $venda->empresa()->first()->razao }} - ({{ $venda->empresa()->first()->fantasia }})</td>
         <td class="text-right font-12"><b>Impresso em:</b> {{ date('d/m/Y H:i:s') }}</td>
     </tr>
 </table>
@@ -71,7 +71,7 @@
     <tbody>
     @foreach($venda->produtos()->get() as $p)
         <tr>
-            <td class="td-border">{{ $p->nome }}</td>
+            <td class="td-border">{{ $p->iderp }} - {{ $p->nome }}</td>
             <td class="text-right td-border">{{ number_format($p->quantidade, 0, ',', '.') }}</td>
             <td class="text-right td-border">{{ number_format($p->preco, 2, ',', '.') }}</td>
             <td class="text-right td-border">{{ number_format($p->desconto > 0.00 ? $p->desconto * -1 : $p->acrescimo, 2, ',', '.') }}</td>

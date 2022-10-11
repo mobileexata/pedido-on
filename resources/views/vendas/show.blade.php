@@ -12,6 +12,13 @@
         </div>
         <div class="card">
             <div class="card-body p-4">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h1 class="text-uppercase text-center">
+                            {{ $venda->empresa()->first()->razao }} - ({{ $venda->empresa()->first()->fantasia }})
+                        </h1>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-12 col-sm-4">
                         <h6><b>Pedido nº:</b> {{ $venda->iderp ? str_pad($venda->iderp, 10, '0', STR_PAD_LEFT) : 'Importação pendente' }}</h6>
@@ -85,7 +92,7 @@
                                             <img src="@if($p->produto()->first()->imagem){{ asset('produtos/' . $p->produto()->first()->imagem) }}@else {{ asset('images/no_photo.png') }}@endif" class="rounded" style="width: 50px; max-height: 100px; margin-left: -10px;">
                                         </div>
                                         <div class="col-9 col-sm-4">
-                                            <h6 class="mb-1 font-weight-bold">{{ $p->nome }}</h6>
+                                            <h6 class="mb-1 font-weight-bold">{{ $p->iderp }} - {{ $p->nome }}</h6>
                                         </div>
                                         <div class="col-6 col-sm-1 text-right">
                                             {{ number_format($p->quantidade, 0, ',', '.') }}
