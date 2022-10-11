@@ -49,76 +49,58 @@
     </tr>
 </table>
 <hr>
-<table class="w-100" cellpadding="5px" cellspacing="0">
-    <tr>
-        <th>ID</th>
-        <th>Nome</th>
-    </tr>
-    <tbody>
-    @foreach($fabricantes as $f)
-        <tr class="trProd">
-            <td>
-                {{ $f['iderp'] }}
-            </td>
-            <td>
-                {{ $f['nome'] }}
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                @if($f['produtos']->count())
-                    <table cellpadding="2px" cellspacing="0">
-                        <tr>
-                            <th>Foto</th>
-                            <th>Ref.</th>
-                            <th>Produto</th>
-                            @if($estoque == 1)
-                            <th>Estoque</th>
-                            @endif
-                            <th>Preço</th>
-                        </tr>
-                        <tbody>
-                        @foreach($f['produtos'] as $p)
-                            <tr class="trProd">
-                                <td class="text-center">
-                                    <img src="{{ $p->image }}" alt="{{ $p->nome }}" class="img-produtos">
-                                </td>
-                                <td>
-                                    {{ $p->referencia }}
-                                </td>
-                                <td>
-                                    {{ $p->iderp }} - {{ $p->nome }}
-                                </td>
-                                @if($estoque == 1)
-                                <td class="text-right">
-                                    <span @if((float)$p->estoque < 0.00) class="text-danger" @endif>
-                                        {{ number_format($p->estoque, 0, ',', '.') }}
-                                    </span>
-                                </td>
-                                @endif
-                                <td class="text-right">
-                                    R$ {{ number_format($p->preco, 2, ',', '.') }}
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th class="text-right">Qtd. Total: {{ $f['produtos']->count() }}</th>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                @if($estoque == 1)
-                                    <th class="text-right">{{ number_format($f['produtos']->sum('estoque'), 0, ',', '.') }}</th>
-                                @endif
-                                <th class="text-right">{{ number_format($f['produtos']->sum('preco'), 2, ',', '.') }}</th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                @else
-                    <b>Nenhum produto encontrado para este fabricante</b>
+<p>ID - Nome</p>
+@foreach($fabricantes as $f)
+    <p>{{ $f['iderp'] }} - {{ $f['nome'] }}</p>
+    @if($f['produtos']->count())
+        <table class="w-100" cellpadding="2px" cellspacing="0">
+            <tr>
+                <th>Foto</th>
+                <th>Ref.</th>
+                <th>Produto</th>
+                @if($estoque == 1)
+                <th>Estoque</th>
                 @endif
-            </td>
-        </tr>
-    @endforeach
-    </tbody>
-</table>
+                <th>Preço</th>
+            </tr>
+            <tbody>
+            @foreach($f['produtos'] as $p)
+                <tr class="trProd">
+                    <td class="text-center">
+                        <img src="{{ $p->image }}" alt="{{ $p->nome }}" class="img-produtos">
+                    </td>
+                    <td>
+                        {{ $p->referencia }}
+                    </td>
+                    <td>
+                        {{ $p->iderp }} - {{ $p->nome }}
+                    </td>
+                    @if($estoque == 1)
+                    <td class="text-right">
+                        <span @if((float)$p->estoque < 0.00) class="text-danger" @endif>
+                            {{ number_format($p->estoque, 0, ',', '.') }}
+                        </span>
+                    </td>
+                    @endif
+                    <td class="text-right">
+                        R$ {{ number_format($p->preco, 2, ',', '.') }}
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th class="text-right">Qtd. Total: {{ $f['produtos']->count() }}</th>
+                    <th>&nbsp;</th>
+                    <th>&nbsp;</th>
+                    @if($estoque == 1)
+                        <th class="text-right">{{ number_format($f['produtos']->sum('estoque'), 0, ',', '.') }}</th>
+                    @endif
+                    <th class="text-right">{{ number_format($f['produtos']->sum('preco'), 2, ',', '.') }}</th>
+                </tr>
+            </tfoot>
+        </table>
+    @else
+        <b>Nenhum produto encontrado para este fabricante</b>
+    @endif
+@endforeach
