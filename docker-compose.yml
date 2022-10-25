@@ -1,0 +1,47 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: pedidoon
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: pedidoon
+    container_name: pedidoon-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    networks:
+      - pedidoon
+
+  db:
+    image: mysql:5.7
+    container_name: pedidoon-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: homestead
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_PASSWORD: secret
+      MYSQL_USER: homestead
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - pedidoon
+
+  nginx:
+    image: nginx:1.17-alpine
+    container_name: pedidoon-nginx
+    restart: unless-stopped
+    ports:
+      - 8500:80
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d
+    networks:
+      - pedidoon
+
+networks:
+  pedidoon:
+    driver: bridge

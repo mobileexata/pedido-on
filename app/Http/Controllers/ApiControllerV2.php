@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Cliente;
-use App\Empresa;
-use App\Http\Requests\ClientesRequest;
-use App\Http\Requests\EmpresasRequest;
+use App\Http\Requests\Api\ClientesRequest;
+use App\Http\Requests\Api\EmpresasRequest;
+use App\Http\Requests\Api\ProdutosRequest;
+use App\Http\Requests\Api\TiposVendasRequest;
+use App\Http\Resources\PedidoCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -15,21 +17,19 @@ class ApiControllerV2 extends Controller
     public function empresas(EmpresasRequest $request)
     {
         try {
-            $data = $request->all();
-            foreach ($data as $e) {
-                $res = $request->user()->empresas()->updateOrCreate([
-                    'iderp' => $e['iderp'],
+            foreach ($request->all() as $empresa) {
+                $request->user()->empresas()->updateOrCreate([
+                    'iderp' => $empresa['iderp'],
                     'user_id' => $request->user()->id
                 ], [
-                    'razao' => $e['razao'],
-                    'fantasia' => $e['fantasia'],
-                    'cnpj' => $e['cnpj'],
-                    'iderp' => $e['iderp'],
+                    'razao' => $empresa['razao'],
+                    'fantasia' => $empresa['fantasia'],
+                    'cnpj' => $empresa['cnpj'],
+                    'iderp' => $empresa['iderp'],
                     'user_id' => $request->user()->id
                 ]);
-                dd($res);
             }
-            return response()->json(null, Response::HTTP_CREATED);
+            return response()->json();
         } catch (Exception $e) {
             $this->returnResponseError($e, 'error creating empresas');
         }
@@ -38,166 +38,102 @@ class ApiControllerV2 extends Controller
     public function clientes(ClientesRequest $request)
     {
         try {
-            foreach ($request->input('clientes') as $c) {
-                $empresa = $request->user()->empresas()->where('iderp', $c->idempresaerp)->first();
+            foreach ($request->all() as $cliente) {
+                $empresa = $request->user()->empresas()->where('iderp', $cliente->idempresaerp)->first();
                 if (!$empresa) {
-                    return response()->json(['error' => 'cliente not found', 'data' => $c], 400);
+                    return response()->json(['error' => 'empresa não encontrada', 'data' => $cliente], 400);
                 }
                 
-                $rota = $empresa->rotas()->where('iderp', $c->idrotaerp)->first();
+                $rota = $empresa->rotas()->where('iderp', $cliente->idrotaerp)->first();
                 if (!$rota) {
-                    return response()->json(['error' => 'rota not found', 'data' => $c], 400);
+                    return response()->json(['error' => 'rota não encontrada', 'data' => $cliente], 400);
                 }
                     
-                
-                Cliente::updateOrCreate([
+                $empresa->clientes()->updateOrCreate([
                     'empresa_id' => $$empresa->id,
-                    'iderp' => $c->iderp
+                    'iderp' => $cliente->iderp
                 ], [
-                    'nome' => $c->nome,
-                    'documento' => $c->documento,
-                    'ativo' => $c->ativo,
-                    'situacao' => $c->situacao ?? null,
-                    'saldo_pendente' => $c->saldo_pendente ?? null,
+                    'nome' => $cliente->nome,
+                    'documento' => $cliente->documento,
+                    'ativo' => $cliente->ativo,
+                    'situacao' => $cliente->situacao ?? null,
+                    'saldo_pendente' => $cliente->saldo_pendente ?? null,
                     'rota_id' => $rota->id
                 ]);
             }
-            return response()->json(['mensagem' => 'Cliente cadastrados com sucesso']);
+            return response()->json();
         } catch (Exception $e) {
             $this->returnResponseError($e, 'error creating clientes');
         }
     }
 
-    // public function tiposVendas($token)
-    // {
-    //     $this->setUser($token);
-    //     $data = request()->all();
+    public function tiposVendas(TiposVendasRequest $request)
+    {
+        foreach ($request->all() as $tipo_venda) {
+            $empresa = $request->user()->empresas()->where('iderp', $tipo_venda->idempresaerp)->first();
 
-    //     if (!isset($data['tiposvendas']) and !$data['tiposvendas'])
-    //         return response()->json(['mensagem' => 'Nenhum tipo de venda informado. ' . print_r($data, true)], $this->statusError);
+            if (!$empresa)
+                return response()->json(['error' => 'empresa não encontrada', 'data' => $tipo_venda ], 400);
 
-    //     $tiposvendas = json_decode($data['tiposvendas']);
+                $empresa->tiposVendas()->updateOrCreate([
+                'empresa_id' => $empresa->id,
+                'iderp' => $tipo_venda->iderp
+            ], [
+                'nome' => $tipo_venda->nome,
+                'ativo' => $tipo_venda->ativo
+            ]);
+        }
+        return response()->json();
+    }
 
-    //     if (!$tiposvendas)
-    //         return response()->json(['mensagem' => 'Nenhum tipo de venda informado. ' . print_r($data['tiposvendas'], true)], $this->statusError);
+    public function produtos(ProdutosRequest $request)
+    {
+        foreach ($request->all() as $produto) {
+            $empresa = $request->user()->empresas()->where('iderp', $produto->idempresaerp)->first();
+            if (!$empresa)
+                return response()->json(['mensagem' => 'empresa não encontrada', 'data' => $produto], 400);
 
-    //     foreach ($tiposvendas as $t) {
-    //         if (!isset($t->nome) or !isset($t->iderp) or !isset($t->idempresaerp) or !$t->nome or !$t->iderp or !$t->idempresaerp)
-    //             return response()->json(['mensagem' => 'Tipo de venda inconsistente: ' . print_r($t, true)], $this->statusError);
-
-    //         if (isset($this->empresasAux[$t->idempresaerp]))
-    //             $empresa_id = $this->empresasAux[$t->idempresaerp];
-    //         else {
-    //             $empresa = $request->user()->empresas()->where('iderp', $t->idempresaerp)->first();
-
-    //             if (!$empresa)
-    //                 return response()->json(['mensagem' => 'Empresa não encontrada: ' . implode(';', $t)], $this->statusError);
-
-    //             $this->empresasAux[$t->idempresaerp] = $empresa->id;
-    //             $empresa_id = $empresa->id;
-    //         }
-
-    //         TiposVenda::updateOrCreate([
-    //             'empresa_id' => $empresa_id,
-    //             'iderp' => $t->iderp
-    //         ], [
-    //             'nome' => $t->nome,
-    //             'ativo' => $t->ativo ?? 'N'
-    //         ]);
-    //     }
-    //     return response()->json(['mensagem' => 'Tipos de vendas cadastrados com sucesso']);
-    // }
-
-    // public function produtos($token)
-    // {
-    //     $this->setUser($token);
-    //     $data = request()->all();
-
-    //     if (!isset($data['produtos']) and !$data['produtos'])
-    //         return response()->json(['mensagem' => 'Nenhum produto informado. ' . print_r($data, true)], $this->statusError);
-
-    //     $produtos = json_decode($data['produtos']);
-
-    //     if (!$produtos)
-    //         return response()->json(['mensagem' => 'Nenhum produto informado. ' . print_r($data['produtos'], true)], $this->statusError);
-
-    //     foreach ($produtos as $p) {
-    //         if (!isset($p->nome) or !isset($p->iderp) or !isset($p->idempresaerp) or !isset($p->preco) or !isset($p->estoque) or !$p->nome or !$p->iderp or !$p->idempresaerp)
-    //             return response()->json(['mensagem' => 'Produto de venda inconsistente: ' . print_r($p, true)], $this->statusError);
-
-    //         $empresa = $request->user()->empresas()->where('iderp', $p->idempresaerp)->first();
-
-    //         if (!$empresa)
-    //             return response()->json(['mensagem' => 'Empresa não encontrada: ' . implode(';', $p)], $this->statusError);
-
-    //         $fabricante_id = null;
-    //         if ($p->fabricante_id) {
-    //             $fabricante = $empresa->fabricantes->where('iderp', $p->fabricante_id)->first();
-                
-    //             if (!$fabricante) {
-    //                 return response()->json(['mensagem' => "fabricante não encontrado iderp recebido: {$p->fabricante_id}"], $this->statusError);
-    //             }
-                
-    //             $fabricante_id = $fabricante->id;
-    //         }
+            $fabricante = $empresa->fabricantes()->where('iderp', $produto->idfabricanteerp)->first();
+            if (!$fabricante) {
+                return response()->json(['mensagem' => "fabricante não encontrado iderp recebido: {$produto->idfabricanteerp}"], 400);
+            }
             
-
-    //         Produto::updateOrCreate([
-    //             'empresa_id' => $empresa->id,
-    //             'iderp' => $p->iderp
-    //         ], [
-    //             'nome' => $p->nome,
-    //             'preco' => $p->preco,
-    //             'estoque' => $p->estoque,
-    //             'ativo' => $p->ativo ?? 'N',
-    //             'ean' => $p->ean ?? null,
-    //             'referencia' => $p->referencia ?? null,
-    //             'fabricante_id' => $fabricante_id,
-    //         ]);
-    //     }
-    //     return response()->json(['mensagem' => 'Produto cadastrados com sucesso']);
-    // }
+            $empresa->produtos()->updateOrCreate([
+                'empresa_id' => $empresa->id,
+                'iderp' => $produto->iderp
+            ], [
+                'nome' => $produto->nome,
+                'preco' => $produto->preco,
+                'estoque' => $produto->estoque,
+                'ativo' => $produto->ativo,
+                'ean' => $produto->ean,
+                'referencia' => $produto->referencia,
+                'fabricante_id' => $fabricante->id,
+            ]);
+        }
+        return response()->json();
+    }
     
-    // public function getPedidos($token)
-    // {
-    //     $data = request()->all();
-    //     $this->setUser($token);
-    //     $pedidos = [];
-    //     $vAux = $request->user()->vendas()->where('total', '>', 0.00)->where('concluida', 'S')->whereNull('vendas.iderp');
-    //     if (isset($data['iderp'])) {
-    //         $e = $request->user()->empresas()->where('iderp', $data['iderp'])->first();
-    //         if (!$e)
-    //             return response()->json(['mensagem' => 'Empresa não encontrada (iderp informado: ' . $data['iderp'] . ')'], $this->statusError);
-    //         $vAux->where('empresa_id', $e->id);
-    //     }
-    //     $vendas = $vAux->get();
-    //     foreach ($vendas as $v) {
-    //         $produtos = [];
-    //         foreach ($v->produtos()->whereNull('iderp')->get() as $p)
-    //             $produtos[$p->id] = [
-    //                 'iderpproduto' => $p->produto()->first()->iderp,
-    //                 'nome' => $p->nome,
-    //                 'preco' => $p->preco,
-    //                 'quantidade' => $p->quantidade,
-    //                 'desconto' => $p->desconto,
-    //                 'acrescimo' => $p->acrescimo,
-    //                 'total' => $p->total
-    //             ];
-    //         $pedidos[$v->id] = [
-    //             'iderpempresa' => $v->empresa()->first()->iderp,
-    //             'iderpcliente' => $v->cliente()->first()->iderp,
-    //             'iderptipovenda' => $v->tipoVenda()->first()->iderp,
-    //             'iderpvendedor' => $v->vendedor()->first()->iderp,
-    //             'total' => $v->total,
-    //             'desconto' => $v->desconto,
-    //             'acrescimo' => $v->acrescimo,
-    //             'dtcadastro' => $v->created_at,
-    //             'observacoes' => $v->observacoes,
-    //             'produtos' => $produtos
-    //         ];
-    //     }
-    //     return response()->json($pedidos);
-    // }
+    public function getPedidos(Request $request)
+    {
+        $pedido = [];
+        $vAux = $request
+            ->user()
+            ->vendas()
+            ->where('total', '>', 0.00)
+            ->where('concluida', 'S')
+            ->whereNull('vendas.iderp');
+        if ($request->has('iderp')) {
+            $e = $request->user()->empresas()->where('iderp', $request->get('iderp'))->first();
+            if (!$e)
+                return response()->json(['error' => 'Empresa não encontrada (iderp informado: ' . $request->get('iderp') . ')'], 400);
+            $vAux->where('empresa_id', $e->id);
+        }
+        $vAux->dd();
+        $vendas = $vAux->get();
+        
+        return response()->json(PedidoCollection::collection($vendas));
+    }
 
     // public function setPedidos($token)
     // {

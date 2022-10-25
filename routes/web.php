@@ -81,7 +81,7 @@ Route::prefix('api')->group(function () {
 
     Route::prefix('v2')->middleware('mdv2')->group(function () {
         Route::get('', function () {
-            return response()->json(['mensagem' => 'Connected']);
+            return response()->json(['message' => 'connected']);
         });
         Route::post('empresas', 'ApiControllerV2@empresas');
         Route::post('clientes', 'ApiControllerV2@clientes');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\VendaRequest;
 use App\Venda;
+use Illuminate\Database\Eloquent\Builder;
 use PDF;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -22,17 +23,14 @@ class VendaController extends Controller
         if (empty($data_final)) {
             $data_final = now()->format('Y-m-d');
         }
-        $vendas = auth()
+        $vendas = $request
             ->user()
             ->vendas()
             ->orderByDesc('created_at')
             ->when(!empty($query_param_search), function ($query) use ($query_param_search) {
-                return $query->whereExists(function ($query) use ($query_param_search) {
-                    $query->select(DB::raw(1))
-                        ->from('clientes')
-                        ->whereColumn('vendas.cliente_id', 'clientes.id')
-                        ->where('clientes.nome', 'like', "%$query_param_search%")
-                        ->orWhere('clientes.documento', 'like', "%$query_param_search %");
+                return $query->whereHas('cliente', function (Builder $query) use ($query_param_search) {
+                    $query->where('nome', 'like', "%$query_param_search%")
+                    ->orWhere('documento', 'like', "%$query_param_search %");;
                 });
             })
             ->whereBetween('vendas.created_at', [
@@ -56,13 +54,12 @@ class VendaController extends Controller
         return view('vendas.create');
     }
 
-    public function clientes($empresa)
+    public function clientes(Request $req, $empresa)
     {
-        $request = request()->all();
         $data['results'] = [];
-        $empresa = auth()->user()->empresas()->findOrFail($empresa);
+        $empresa = $req->user()->empresas()->findOrFail($empresa);
         $clientes = $empresa->clientes()->where('ativo', 'S')->take(50);
-        if (auth()->user()->user_id and auth()->user()->rotas()->count())
+        if ($req->user()->user_id && $req->user()->rotas()->count())
             $clientes->whereIn('rota_id', function ($query) {
                 return $query->from('users_rotas')
                     ->select('rota_id')
@@ -70,8 +67,13 @@ class VendaController extends Controller
                     ->where('user_id', auth()->id());
             });
 
-        if (isset($request['q']) and $request['q'])
-            $clientes->where('nome', 'like', "%{$request['q']}%")->orWhere('documento', 'like', "%{$request['q']}%");
+        
+        if ($req->has('q')) {
+            $search = $req->query('q');
+            $clientes
+                ->where('nome', 'like', "%$search%")
+                ->orWhere('documento', 'like', "%$search%");
+        }
         foreach ($clientes->get() as $c) {
             $saldo_pendente_formatado = $this->getSaldoPendenteFormatado($c->saldo_pendente);
             $situacao_saldo_calc = $this->getTextSaldoSituacao($c->situacao, $c->saldo_pendente, $saldo_pendente_formatado);
@@ -161,29 +163,29 @@ class VendaController extends Controller
         return response()->json($data);
     }
 
-    public function store(VendaRequest $r)
+    public function store(VendaRequest $request)
     {
-        $data = $r->all();
-        $data['user_id'] = auth()->id();
-        $data['owner_user_id'] = auth()->user()->user_id ?? auth()->id();
-        $venda = auth()->user()->vendas()->create($data);
+        $data = $request->all();
+        $data['user_id'] = $request->id();
+        $data['owner_user_id'] = $request->user()->user_id ?? auth()->id();
+        $venda = $request->user()->vendas()->create($data);
         return redirect()->route('vendas.edit', ['venda' => $venda->id]);
     }
 
-    public function edit($venda)
+    public function edit(Request $request, $venda)
     {
-        $v = auth()->user()->vendas()->findOrFail($venda);
+        $v = $request->user()->vendas()->findOrFail($venda);
         if ($v->iderp)
-            return back()->with('status_error', 'Venda já importada no ERP, não será altera-lá');
+            return back()->with('status_error', 'Venda já importada no ERP, não será possível altera-lá');
         $cliente = $v->cliente()->first();
         $situacao_saldo_calc = $this->getTextSaldoSituacao($cliente->situacao, $cliente->saldo_pendente);
         return view('vendas.edit', ['venda' => $v, 'situacao_saldo_calc' => $situacao_saldo_calc]);
     }
 
-    public function update(VendaRequest $r, $venda)
+    public function update(VendaRequest $request, $venda)
     {
-        $data = $r->all();
-        $v = auth()->user()->vendas()->findOrFail($venda);
+        $data = $request->all();
+        $v = $request->user()->vendas()->findOrFail($venda);
         if (isset($data['desconto']))
             $data['desconto'] = $this->trataFloat($data['desconto']);
         if (isset($data['acrescimo']))
@@ -195,9 +197,9 @@ class VendaController extends Controller
         return redirect()->route('vendas.index');
     }
 
-    public function destroy($venda)
+    public function destroy(Request $request, $venda)
     {
-        $v = Venda::findOrFail($venda);
+        $v = $request->user()->vendas()->findOrFail($venda);
         $v->deletar();
         return redirect()->route('vendas.index');
     }
