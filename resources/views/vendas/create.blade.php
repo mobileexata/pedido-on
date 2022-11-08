@@ -37,7 +37,7 @@
                             <div class="row">
                                 <div class="col-md-6 col-xl-6 col-sm-12 col-lg-6 form-group">
                                     <label for="cliente_id" id="label_cliente_id">
-                                        Cliente
+                                        Cliente @if(auth()->user()->user_id and auth()->user()->rotas()->count()) {{ '(Rota: ' . auth()->user()->rotas()->get()->pluck('nome')->implode(', ') . ')' }} @endif
                                     </label>
                                     <select name="cliente_id"
                                             id="cliente_id"

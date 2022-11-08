@@ -44,7 +44,7 @@ class EmpresaController extends Controller
         $e = $this->findEmpresa($empresa);
         $clientes = $e->clientes();
         if (auth()->user()->user_id and auth()->user()->rotas()->count())
-            $clientes->whereIn('rota_id', [auth()->user()->rotas()->select('rota_id')->distinct()->get()]);
+            $clientes->whereIn('rota_id', auth()->user()->rotas()->distinct()->get()->pluck('id')->toArray());
         if (isset($data['q']))
             $clientes->where(function ($query) use ($data) {
                 $query->where('nome', 'like', "%{$data['q']}%")
