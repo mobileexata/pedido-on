@@ -285,7 +285,7 @@ class ApiController extends Controller
                     'total' => $p->total
                 ];
             $pedidos[$v->id] = [
-                'iderpempresa' => $v->empresa()->first()->iderp,
+                'iderpempresa' => (int) $v->empresa()->first()->iderp,
                 'iderpcliente' => $v->cliente()->first()->iderp,
                 'iderptipovenda' => $v->tipoVenda()->first()->iderp,
                 'iderpvendedor' => $v->vendedor()->first()->iderp,
