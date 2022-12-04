@@ -28,7 +28,6 @@ class ChangeClientes extends Migration
             $table->string('email')->nullable();
             $table->enum('isento', ['S', 'N'])->nullable();
             $table->string('telefone')->nullable();
-            $table->timestamps();
         });
     }
 
