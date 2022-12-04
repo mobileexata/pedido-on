@@ -11,6 +11,7 @@ use App\TiposVenda;
 use App\User;
 use App\UsersRota;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ApiController extends Controller
 {
@@ -106,6 +107,58 @@ class ApiController extends Controller
             ]);
         }
         return response()->json(['mensagem' => 'Cliente cadastrados com sucesso']);
+    }
+
+    public function clientesPendentes($token)
+    {
+        $this->setUser($token);
+        $res = collect();
+
+        $this->user->empresas->each(function ($empresa) use ($res) {
+            $empresa->clientes()->whereNull('iderp')->get()->each(function ($cliente) use ($empresa, $res){
+                $res->push([
+                    "id" => $cliente->id,
+                    "iderpempresa" => (int) $empresa->iderp,
+                    "iderprota" => Rota::find($cliente->rota_id)->iderp,
+                    "nome" => $cliente->nome,
+                    "documento" => $cliente->documento,
+                    "created_at" => date('Y-m-d', strtotime($cliente->created_at)),
+                    "ativo" => $cliente->ativo,
+                    "fantasia" => $cliente->fantasia,
+                    "dt_nascimento" => date('Y-m-d', strtotime($cliente->dt_nascimento)),
+                    "tp_pessoa" => $cliente->tp_pessoa,
+                    "inscricao" => $cliente->inscricao,
+                    "cep" => $cliente->cep,
+                    "numero" => $cliente->numero,
+                    "logradouro" => $cliente->logradouro,
+                    "bairro" => $cliente->bairro,
+                    "cidade" => $cliente->cidade,
+                    "uf" => $cliente->uf,
+                    "ponto_referencia" => $cliente->ponto_referencia,
+                    "email" => $cliente->email,
+                    "isento" => $cliente->isento,
+                    "telefone" => $cliente->telefone,
+                ]);
+            });
+        });
+
+        return response()->json($res->toArray());
+    }
+
+    public function setClientesPendentes(Request $request, $token)
+    {
+        $this->validate($request, [
+            '*.idcliente' => 'required|exists:clientes,id',
+            '*.idclienteerp' => 'required|integer'
+        ]);
+        $this->setUser($token);
+        $data = collect($request->all());
+
+        $data->each(function ($association) {
+            Cliente::whereNull('iderp')->where('id', $association['idcliente'])->update(['iderp' => $association['idclienteerp']]);
+        });
+
+        return response('', Response::HTTP_NO_CONTENT);
     }
 
     public function tiposVendas($token)

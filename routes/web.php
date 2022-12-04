@@ -70,6 +70,8 @@ Route::prefix('api')->group(function () {
     });
     Route::post('empresas/{token}', 'ApiController@empresas');
     Route::post('clientes/{token}', 'ApiController@clientes');
+    Route::get('clientes/{token}', 'ApiController@clientesPendentes');
+    Route::patch('clientes/{token}', 'ApiController@setClientesPendentes');
     Route::post('tiposvendas/{token}', 'ApiController@tiposVendas');
     Route::post('produtos/{token}', 'ApiController@produtos');
     Route::get('pedidos/{token}', 'ApiController@getPedidos');
@@ -77,20 +79,4 @@ Route::prefix('api')->group(function () {
     Route::post('rotas/{token}', 'ApiController@rotas');
     Route::post('rotas-funcionarios/{token}', 'ApiController@rotasFuncionarios');
     Route::post('fabricantes/{token}', 'ApiController@fabricantes');
-
-
-    Route::prefix('v2')->middleware('mdv2')->group(function () {
-        Route::get('', function () {
-            return response()->json(['mensagem' => 'Connected']);
-        });
-        Route::post('empresas', 'ApiControllerV2@empresas');
-        Route::post('clientes', 'ApiControllerV2@clientes');
-        Route::post('tiposvendas', 'ApiControllerV2@tiposVendas');
-        Route::post('produtos', 'ApiControllerV2@produtos');
-        Route::get('pedidos', 'ApiControllerV2@getPedidos');
-        Route::post('pedidos', 'ApiControllerV2@setPedidos');
-        Route::post('rotas', 'ApiControllerV2@rotas');
-        Route::post('rotas-funcionarios', 'ApiControllerV2@rotasFuncionarios');
-        Route::post('fabricantes', 'ApiControllerV2@fabricantes');
-    });
 });
