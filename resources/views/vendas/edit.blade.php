@@ -217,6 +217,7 @@
                 loadProdutoPedido(true);
                 totalizacao();
                 $('#modalFinalizacao').on('shown.bs.modal', function () {
+                    console.log("220")
                     var $this = $(this);
                     $this.find('#finalizacao').load('{{ route('vendas.finalizacao', ['venda' => $venda->id]) }}', function () {
                         $this.find('.select2').select2();
