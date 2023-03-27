@@ -207,8 +207,16 @@ class VendaController extends Controller
         return view('vendas.totalizacao', ['venda' => $venda]);
     }
 
-    public function finalizacaoVenda(Venda $venda)
+    public function finalizacaoVenda(Request $request, Venda $venda)
     {
+        if ($request->input('cliente_id')) {
+            $venda->cliente_id = $request->input('cliente_id');
+        }
+
+        if ($request->input('tiposvenda_id')) {
+            $venda->tiposvenda_id = $request->input('tiposvenda_id');
+        }
+        
         return view('vendas.finalizacao', ['venda' => $venda]);
     }
 
