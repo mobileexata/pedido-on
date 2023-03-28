@@ -217,13 +217,14 @@
                 loadProdutoPedido(true);
                 totalizacao();
                 $('#modalFinalizacao').on('shown.bs.modal', function () {
-                    let cliente_id, tipo_venda_id
                     let route = '{{ route('vendas.finalizacao', ['venda' => $venda->id]) }}?'
-                    if ($("#cliente_id").val() && $("#cliente_id").val() != '{{ $venda->cliente_id }}') {
-                        route += 'cliente_id=' + $("#cliente_id").val() + '&'
+                    var cliente_id = $("#cliente_id").val()
+                    var tipo_venda_id = $("#tiposvenda_id").val()
+                    if (cliente_id && cliente_id != '{{ $venda->cliente_id }}') {
+                        route += 'cliente_id=' + cliente_id + '&'
                     }
-                    if ($("#tiposvenda_id").val() && $("#tiposvenda_id").val() != '{{ $venda->tiposvenda_id }}') {
-                        route += 'tiposvenda_id=' + $("#tiposvenda_id").val()
+                    if (tipo_venda_id && tipo_venda_id != '{{ $venda->tiposvenda_id }}') {
+                        route += 'tiposvenda_id=' + tipo_venda_id
                     }
                     var $this = $(this);
                     $this.find('#finalizacao').load(route, function () {
