@@ -217,6 +217,10 @@ class VendaController extends Controller
             $venda->tiposvenda_id = $request->input('tiposvenda_id');
         }
 
+        if ($request->get('cliente_id') || $request->get('tiposvenda_id')) {
+            $venda->save();
+        }
+
         return view('vendas.finalizacao', ['venda' => $venda]);
     }
 
