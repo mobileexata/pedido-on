@@ -218,7 +218,7 @@
                 totalizacao();
                 $('#modalFinalizacao').on('shown.bs.modal', function () {
                     let cliente_id, tipo_venda_id
-                    let route = '{{ route('vendas.finalizacao', ['venda' => $venda->id]) }}'
+                    let route = '{{ route('vendas.finalizacao', ['venda' => $venda->id]) }}?'
                     if ($("#cliente_id").val() && $("#cliente_id").val() != '{{ $venda->cliente_id }}') {
                         route += '&cliente_id=' + $("#cliente_id").val()
                     }
