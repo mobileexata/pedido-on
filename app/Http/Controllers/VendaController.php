@@ -212,11 +212,11 @@ class VendaController extends Controller
         $cliente_id = $request->query('cliente_id');
         $tiposvenda_id = $request->query('tiposvenda_id');
         $data = [];
-        if ($cliente_id) {
+        if ($cliente_id && $cliente_id != $venda->cliente_id) {
             $data['cliente_id'] = $cliente_id;
         }
 
-        if ($tiposvenda_id) {
+        if ($tiposvenda_id && $tiposvenda_id != $venda->tiposvenda_id) {
             $data['tiposvenda_id'] = $tiposvenda_id;
         }
 
