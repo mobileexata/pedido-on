@@ -221,12 +221,12 @@
                     var tipo_venda_id = $("#tiposvenda_id").val()
                     var route = '{{ route('vendas.finalizacao', ['venda' => $venda->id]) }}?cliente_id=' + cliente_id + '&tiposvenda_id=' + tipo_venda_id
                     var $this = $(this);
-                    $this.find('#finalizacao').fadeOut()
+                    $this.find('.select2').attr('disabled', 'disabled')
                     $this.find('#finalizacao').load(route, function () {
-                        $this.find('.select2').select2();
+                        $this.find('.select2').removeAttr('disabled').select2();
                         maske();
+                        $this.find('#finalizacao').show()
                     });
-                    $this.find('#finalizacao').show()
                 });
                 @include('vendas.select_clientes')
             };
