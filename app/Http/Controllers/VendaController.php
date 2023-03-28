@@ -209,15 +209,17 @@ class VendaController extends Controller
 
     public function finalizacaoVenda(Request $request, Venda $venda)
     {
-        if ($request->get('cliente_id')) {
-            $venda->cliente_id = $request->input('cliente_id');
+        $cliente_id = $request->query('cliente_id');
+        $tiposvenda_id = $request->query('tiposvenda_id');
+        if ($cliente_id) {
+            $venda->cliente_id = $cliente_id;
         }
 
-        if ($request->get('tiposvenda_id')) {
-            $venda->tiposvenda_id = $request->input('tiposvenda_id');
+        if ($tiposvenda_id) {
+            $venda->tiposvenda_id = $tiposvenda_id;
         }
 
-        if ($request->get('cliente_id') || $request->get('tiposvenda_id')) {
+        if ($cliente_id || $tiposvenda_id) {
             $venda->save();
         }
 
