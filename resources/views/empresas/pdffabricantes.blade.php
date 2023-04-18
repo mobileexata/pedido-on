@@ -60,7 +60,9 @@
                 @if($estoque == 1)
                 <th>Estoque</th>
                 @endif
+                @if($preco == 1)
                 <th>Preço</th>
+                @endif
             </tr>
             <tbody>
             @foreach($f['produtos'] as $p)
@@ -81,9 +83,11 @@
                         </span>
                     </td>
                     @endif
+                    @if($preco == 1)
                     <td class="text-right">
                         R$ {{ number_format($p->preco, 2, ',', '.') }}
                     </td>
+                    @endif
                 </tr>
             @endforeach
             </tbody>
@@ -95,7 +99,9 @@
                     @if($estoque == 1)
                         <th class="text-right">{{ number_format($f['produtos']->sum('estoque'), 0, ',', '.') }}</th>
                     @endif
-                    <th class="text-right">{{ number_format($f['produtos']->sum('preco'), 2, ',', '.') }}</th>
+                    @if($preco == 1)
+                        <th class="text-right">{{ number_format($f['produtos']->sum('preco'), 2, ',', '.') }}</th>
+                    @endif
                 </tr>
             </tfoot>
         </table>

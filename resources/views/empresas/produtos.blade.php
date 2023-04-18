@@ -16,8 +16,9 @@
                                     <a class="dropdown-item" href="{{ route('empresas.produtos.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 1, 'preco' => 1])) }}" target="_blank">Com estoque e preço</a>
                                     <a class="dropdown-item" href="{{ route('empresas.produtos.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 2, 'preco' => 1])) }}" target="_blank">Sem informação de estoque</a>
                                     <a class="dropdown-item" href="{{ route('empresas.produtos.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 1, 'preco' => 2])) }}" target="_blank">Sem preço de venda</a>
-                                    <a class="dropdown-item" href="{{ route('empresas.fabricantes.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 1])) }}" target="_blank">Agrupado por fabricante com informação de estoque</a>
-                                    <a class="dropdown-item" href="{{ route('empresas.fabricantes.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 2])) }}" target="_blank">Agrupado por fabricante sem informação de estoque</a>
+                                    <a class="dropdown-item" href="{{ route('empresas.fabricantes.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 1, 'preco' => 1])) }}" target="_blank">Agrupado por fabricante com estoque e preço</a>
+                                    <a class="dropdown-item" href="{{ route('empresas.fabricantes.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 2, 'preco' => 1])) }}" target="_blank">Agrupado por fabricante sem informação de estoque</a>
+                                    <a class="dropdown-item" href="{{ route('empresas.fabricantes.pdf', array_merge(request()->except('page'), ['empresa' => $empresa, 'estoque' => 1, 'preco' => 2])) }}" target="_blank">Agrupado por fabricante sem preço de venda</a>
                                 </div>
                             </div>
                         </div>    
