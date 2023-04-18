@@ -145,7 +145,7 @@ class EmpresaController extends Controller
             'produtos' => $produtos,
             'nome_empresa' => $this->e->razao,
             'estoque' => (int)request()->input('estoque', 1),
-            'preco' => (int)request()->input('estoque', 1)
+            'preco' => (int)request()->input('preco', 1)
         ])->render();
         $pdf = PDF::loadHtml($view);
         return $pdf->stream('produtos-' . $this->e->fantasia . '-' . time() . '.pdf');
