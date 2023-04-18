@@ -199,7 +199,8 @@ class EmpresaController extends Controller
         $view = view('empresas.pdffabricantes', [
             'fabricantes' => $fabricantes,
             'nome_empresa' => $this->e->razao,
-            'estoque' => (int) $request->get('estoque', 1)
+            'estoque' => (int) $request->get('estoque', 1),
+            'preco' => (int)request()->input('preco', 1)
         ])->render();
         $pdf = PDF::loadHtml($view);
         return $pdf->stream('fabricantes-produtos-' . $this->e->fantasia . '-' . time() . '.pdf');
