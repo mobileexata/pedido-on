@@ -57,7 +57,9 @@
         @if($estoque == 1)
         <th>Estoque</th>
         @endif
+        @if($preco == 1)
         <th>Preço</th>
+        @endif
     </tr>
     <tbody>
     @foreach($produtos as $p)
