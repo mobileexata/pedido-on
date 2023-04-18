@@ -78,9 +78,11 @@
                 </span>
             </td>
             @endif
+            @if($preco == 1)
             <td class="text-right">
                 R$ {{ number_format($p->preco, 2, ',', '.') }}
             </td>
+            @endif
         </tr>
     @endforeach
     </tbody>

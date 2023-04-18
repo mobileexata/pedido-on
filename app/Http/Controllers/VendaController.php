@@ -32,7 +32,7 @@ class VendaController extends Controller
                         ->from('clientes')
                         ->whereColumn('vendas.cliente_id', 'clientes.id')
                         ->where('clientes.nome', 'like', "%$query_param_search%")
-                        ->orWhere('clientes.documento', 'like', "%$query_param_search %");
+                        ->orWhere('clientes.documento', 'like', "%$query_param_search%");
                 });
             })
             ->whereBetween('vendas.created_at', [
