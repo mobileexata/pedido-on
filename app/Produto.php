@@ -8,7 +8,11 @@ class Produto extends Model
 {
 
     protected $fillable = [
-        'empresa_id', 'nome', 'preco', 'estoque', 'iderp', 'imagem', 'ativo', 'ean', 'referencia', 'fabricante_id'
+        'empresa_id', 'nome', 'preco', 'estoque', 'iderp', 'imagem', 'ativo', 'ean', 'referencia', 'fabricante_id', 'precos'
+    ];
+
+    protected $casts = [
+        'precos' => 'array',
     ];
 
     public function atualizaEstoque($qtd, $op = '-')
@@ -18,6 +22,13 @@ class Produto extends Model
         else
             $this->estoque += $qtd;
         $this->save();
+    }
+
+    public function getPrecoVenda($idErpTipoVenda = 0) {
+        if ($idErpTipoVenda == 0) {
+            return $this->preco;
+        }
+        return $this->precos[$idErpTipoVenda];
     }
 
     public function getImageAttribute()

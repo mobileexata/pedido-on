@@ -195,7 +195,9 @@ class ApiController extends Controller
                 'iderp' => $t->iderp
             ], [
                 'nome' => $t->nome,
-                'ativo' => $t->ativo ?? 'N'
+                'ativo' => $t->ativo ?? 'N',
+                'idtipoprecoerp' => isset($t->idtipoprecoerp) ? $t->idtipoprecoerp : 1,
+                'desctipopreco' => isset($t->desctipopreco) ? $t->desctipopreco : 1,
             ]);
         }
         return response()->json(['mensagem' => 'Tipos de vendas cadastrados com sucesso']);
@@ -215,7 +217,7 @@ class ApiController extends Controller
             return response()->json(['mensagem' => 'Nenhum produto informado. ' . print_r($data['produtos'], true)], $this->statusError);
 
         foreach ($produtos as $p) {
-            if (!isset($p->nome) or !isset($p->iderp) or !isset($p->idempresaerp) or !isset($p->preco) or !isset($p->estoque) or !$p->nome or !$p->iderp or !$p->idempresaerp)
+            if (!isset($p->nome) or !isset($p->iderp) or !isset($p->idempresaerp) or !isset($p->estoque) or !$p->nome or !$p->iderp or !$p->idempresaerp)
                 return response()->json(['mensagem' => 'Produto de venda inconsistente: ' . print_r($p, true)], $this->statusError);
 
             $empresa = $this->user->empresas()->where('iderp', $p->idempresaerp)->first();
@@ -224,7 +226,7 @@ class ApiController extends Controller
                 return response()->json(['mensagem' => 'Empresa não encontrada: ' . implode(';', $p)], $this->statusError);
 
             $fabricante_id = null;
-            if ($p->fabricante_id) {
+            if (isset($p->fabricante_id) && $p->fabricante_id) {
                 $fabricante = $empresa->fabricantes->where('iderp', $p->fabricante_id)->first();
                 
                 if (!$fabricante) {
@@ -233,14 +235,14 @@ class ApiController extends Controller
                 
                 $fabricante_id = $fabricante->id;
             }
-            
 
             Produto::updateOrCreate([
                 'empresa_id' => $empresa->id,
                 'iderp' => $p->iderp
             ], [
                 'nome' => $p->nome,
-                'preco' => $p->preco,
+                'preco' => isset($p->preco) ? $p->preco : 0,
+                'precos' => isset($p->precos) ? $p->precos : ["1" => isset($p->preco) ? $p->preco : 0],
                 'estoque' => $p->estoque,
                 'ativo' => $p->ativo ?? 'N',
                 'ean' => $p->ean ?? null,

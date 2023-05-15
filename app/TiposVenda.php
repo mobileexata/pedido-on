@@ -9,6 +9,6 @@ class TiposVenda extends Model
     protected $table = 'tiposvendas';
 
     protected $fillable = [
-        'empresa_id', 'nome', 'iderp', 'ativo'
+        'empresa_id', 'nome', 'iderp', 'ativo', 'idtipoprecoerp', 'desctipopreco'
     ];
 }
