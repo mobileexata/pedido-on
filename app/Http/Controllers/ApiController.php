@@ -243,6 +243,7 @@ class ApiController extends Controller
                 'nome' => $p->nome,
                 'preco' => isset($p->preco) ? $p->preco : 0,
                 'precos' => isset($p->precos) ? $p->precos : ["1" => isset($p->preco) ? $p->preco : 0],
+                'custos' => isset($p->custos) ? $p->custos : ["1" => 0],
                 'estoque' => $p->estoque,
                 'ativo' => $p->ativo ?? 'N',
                 'ean' => $p->ean ?? null,
