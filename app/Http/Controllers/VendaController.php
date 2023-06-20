@@ -134,7 +134,7 @@ class VendaController extends Controller
             ];
             foreach ($produtos->get() as $p) {
                 $precoVenda = (isset($p->precos[$idTipoPreco]) ? $p->precos[$idTipoPreco] : 0);
-                $custo = (isset($p->custos[$empresa->id]) ? $p->custos[$empresa->id] : 0);
+                $custo = (isset($p->custos[$empresa->iderp]) ? $p->custos[$empresa->iderp] : 0);
                 $data['results'][] = [
                     'id' => $p->id,
                     'nome' => $p->nome,

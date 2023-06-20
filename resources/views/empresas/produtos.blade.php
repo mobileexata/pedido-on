@@ -135,7 +135,7 @@
                                                     class="float-right @if ((float) $p->estoque < 0.0) text-danger @endif">{{ number_format($p->estoque, 0, ',', '.') }}</span>
                                             </div>
                                             <div class="col-6 col-sm-1">
-                                                <b class="float-right">R$ {{ number_format((isset($p->custos[$empresa]) ? $p->custos[$empresa] :   0), 2, ',', '.') }}</b>
+                                                <b class="float-right">R$ {{ number_format((isset($p->custos[$id_erp_empresa]) ? $p->custos[$id_erp_empresa] :   0), 2, ',', '.') }}</b>
                                             </div>
                                             <div class="col-6 col-sm-2">
                                                 @foreach($tipos_precos as $id => $t)

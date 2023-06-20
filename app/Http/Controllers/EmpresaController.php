@@ -59,6 +59,7 @@ class EmpresaController extends Controller
         $produtos = $this->getProdutos($empresa, $data);
         return view('empresas.produtos', [
             'empresa' => $empresa,
+            'id_erp_empresa' => $this->e->iderp,
             'produtos' => $produtos->paginate(),
             'q' => $data['q'] ?? null,
             'has_photo' => $data['has_photo'] ?? null,
