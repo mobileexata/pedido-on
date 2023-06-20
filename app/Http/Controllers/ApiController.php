@@ -236,14 +236,17 @@ class ApiController extends Controller
                 $fabricante_id = $fabricante->id;
             }
 
+            $precos = isset($p->Precos) ? collect($p->Precos)->pluck("vlpreco", "codtipopreco")->toArray() : ["1" => isset($p->preco) ? $p->preco : 0];
+            $custos = isset($p->Custos) ? collect($p->Custos)->pluck("vlcusto", "codempresa")->toArray() : ["1" => 0];
+
             Produto::updateOrCreate([
                 'empresa_id' => $empresa->id,
                 'iderp' => $p->iderp
             ], [
                 'nome' => $p->nome,
                 'preco' => isset($p->preco) ? $p->preco : 0,
-                'precos' => isset($p->precos) ? $p->precos : ["1" => isset($p->preco) ? $p->preco : 0],
-                'custos' => isset($p->custos) ? $p->custos : ["1" => 0],
+                'precos' => $precos,
+                'custos' => $custos,
                 'estoque' => $p->estoque,
                 'ativo' => $p->ativo ?? 'N',
                 'ean' => $p->ean ?? null,
