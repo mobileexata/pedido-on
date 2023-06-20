@@ -21,6 +21,7 @@
                                 <thead>
                                 <tr>
                                     <th>Forma de pagamento</th>
+                                    <th>Tipo de preço</th>
                                     <th class="text-right">#</th>
                                 </tr>
                                 </thead>
@@ -28,6 +29,7 @@
                                 @foreach($tiposVendas as $t)
                                     <tr @if($t->ativo == 'N') class="text-danger" data-toggle="tooltip" rel="tooltip" title="Forma de pagamento inativa" @endif>
                                         <td>{{ $t->nome }}</td>
+                                        <td>{{ $t->desctipopreco }}</td>
                                         <td class="text-right" width="50">#</td>
                                     </tr>
                                 @endforeach

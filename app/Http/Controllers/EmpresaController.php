@@ -65,7 +65,9 @@ class EmpresaController extends Controller
             'has_stock' => $data['has_stock'] ?? null,
             'fabricantes' => $this->getfabricantes($empresa, $data)->get(),
             'orders' => self::ORDERS,
-            'order' => $data['order'] ?? null
+            'order' => $data['order'] ?? null,
+            'ativo' => $data['ativo'] ?? null,
+            'tipos_precos' => $this->e->tiposVendas()->get()->pluck('desctipopreco', 'idtipoprecoerp')->toArray(),
         ]);
     }
 
@@ -102,6 +104,9 @@ class EmpresaController extends Controller
             })
             ->when(isset($data['fabricante']), function ($query) use ($data) {
                 return $query->where('fabricante_id', $data['fabricante']);
+            })
+            ->when(isset($data['ativo']), function ($query) use ($data) {
+                return $query->where('ativo', $data['ativo']);
             })->when(isset($data['order']), function ($query) use ($data) {
                 if (!isset(self::ORDERS[$data['order']])) {
                     $data['order'] = 1;
@@ -140,12 +145,13 @@ class EmpresaController extends Controller
         ini_set('max_execution_time', '3000');
         ini_set('memory_limit', '-1');
         ini_set("pcre.backtrack_limit", "5000000");
-        $produtos = $this->getProdutos($empresa, request()->all())->where('ativo', 'S')->get();
+        $produtos = $this->getProdutos($empresa, request()->all())->get();
         $view = view('empresas.pdfprodutos', [
             'produtos' => $produtos,
             'nome_empresa' => $this->e->razao,
             'estoque' => (int)request()->input('estoque', 1),
-            'preco' => (int)request()->input('preco', 1)
+            'preco' => (int)request()->input('preco', 1),
+            'ativo' => request()->input('ativo', 'S'),
         ])->render();
         $pdf = PDF::loadHtml($view);
         return $pdf->stream('produtos-' . $this->e->fantasia . '-' . time() . '.pdf');
@@ -172,7 +178,9 @@ class EmpresaController extends Controller
                     "nome" => $fabricante->nome,
                     "produtos" => $fabricante
                         ->produtos()
-                        ->where('ativo', 'S')
+                        ->when($request->get('ativo', false), function ($query) use ($request) {
+                            return $query->where('ativo', $request->get('ativo'));
+                        })
                         ->when($query_string, function ($query) use ($query_string) {
                             return $query->where(function ($query) use ($query_string) {
                                 return $query->orWhere('nome', 'like', "%$query_string%")
@@ -200,7 +208,8 @@ class EmpresaController extends Controller
             'fabricantes' => $fabricantes,
             'nome_empresa' => $this->e->razao,
             'estoque' => (int) $request->get('estoque', 1),
-            'preco' => (int)request()->input('preco', 1)
+            'preco' => (int)request()->input('preco', 1),
+            'ativo' => request()->input('ativo', 'S'),
         ])->render();
         $pdf = PDF::loadHtml($view);
         return $pdf->stream('fabricantes-produtos-' . $this->e->fantasia . '-' . time() . '.pdf');

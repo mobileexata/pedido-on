@@ -70,6 +70,14 @@
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-3 form-group">
+                                    <label>Prod Ativos</label>
+                                    <select class="form-control" name="ativo" onchange="$(this).parents('form').submit()">
+                                        <option @if ($ativo != 'S' && $ativo != 'N') selected @endif value="">Todos</option>
+                                        <option value="S" @if ($ativo == 'S') selected @endif>Ativos</option>
+                                        <option value="N" @if ($ativo == 'N') selected @endif>Inativos</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-sm-3 form-group">
                                     <label>Ordem</label>
                                     <select class="form-control" name="order"
                                         onchange="$(this).parents('form').submit()">
@@ -88,16 +96,23 @@
                                     <div class="row">
                                         <div class="col-2 col-sm-1"></div>
                                         <div class="col-10 col-sm-5">
-                                            <b>PRODUTO</b>
+                                            <b>CÓD. - PRODUTO</b>
                                         </div>
-                                        <div class="col-4 col-sm-2">
+                                        <div class="col-6 col-sm-1">
+                                            @if (Agent::isMobile())
+                                            <b>REFERÊNCIA</b>
+                                            @else
                                             <b>REF.</b>
+                                            @endif
                                         </div>
-                                        <div class="col-4 col-sm-1">
+                                        <div class="col-6 col-sm-1">
                                             <b class="float-right">ESTOQUE</b>
                                         </div>
-                                        <div class="col-4 col-sm-2">
-                                            <b class="float-right">PREÇO</b>
+                                        <div class="col-6 col-sm-1">
+                                            <b class="float-right">PREÇO DE CUSTO</b>
+                                        </div>
+                                        <div class="col-6 col-sm-2">
+                                            <b class="float-right">PREÇO DE VENDA</b>
                                         </div>
                                     </div>
                                 </li>
@@ -112,15 +127,20 @@
                                             <div class="col-10 col-sm-5">
                                                 <h6>{{ $p->iderp }} - {{ $p->nome }}</h6>
                                             </div>
-                                            <div class="col-4 col-sm-2">
+                                            <div class="col-6 col-sm-1">
                                                 <span>{{ $p->referencia }}</span>
                                             </div>
-                                            <div class="col-4 col-sm-1">
+                                            <div class="col-6 col-sm-1">
                                                 <span
                                                     class="float-right @if ((float) $p->estoque < 0.0) text-danger @endif">{{ number_format($p->estoque, 0, ',', '.') }}</span>
                                             </div>
-                                            <div class="col-4 col-sm-2">
-                                                <b class="float-right">R$ {{ number_format($p->preco, 2, ',', '.') }}</b>
+                                            <div class="col-6 col-sm-1">
+                                                <b class="float-right">R$ {{ number_format((isset($p->custos[$empresa]) ? $p->custos[$empresa] :   0), 2, ',', '.') }}</b>
+                                            </div>
+                                            <div class="col-6 col-sm-2">
+                                                @foreach($tipos_precos as $id => $t)
+                                                    {{ $t }}: <b class="float-right">R$ {{ number_format((isset($p->precos[$id]) ? $p->precos[$id] :   0), 2, ',', '.') }}</b><br>
+                                                @endforeach
                                             </div>
                                             @if (!Agent::isMobile())
                                                 <div class="col-2 col-sm-1">

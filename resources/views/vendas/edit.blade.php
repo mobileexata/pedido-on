@@ -56,8 +56,7 @@
                                         class="select2 @error('tiposvenda_id') is-invalid @enderror"
                                         style="width: 100%;">
                                     @foreach(auth()->user()->empresas()->findOrFail($venda->empresa_id)->tiposVendas()->where('ativo', 'S')->get() as $t)
-                                        <option value="{{ $t->id }}"
-                                                @if($venda->tiposvenda_id == $t->id) selected @endif> {{ $t->nome }}</option>
+                                        <option value="{{ $t->id }}" @if($venda->tiposvenda_id == $t->id) selected @endif> {{ $t->nome }}</option>
                                     @endforeach
                                 </select>
                                 @error('tiposvenda_id')
@@ -173,10 +172,9 @@
                 $('select.produto_id').select2({
                     ajax: {
                         url: function () {
-                            return $('meta[name="site-link"]').attr('content') + 'pesquisa/produtos/' + $('select[name="empresa_id"]').val()
+                            return $('meta[name="site-link"]').attr('content') + 'pesquisa/produtos/' + $('select[name="empresa_id"]').val() + '?tiposvenda_id=' + $('select[name="tiposvenda_id"]').val()
                         },
                         dataType: 'json',
-                        // width: 'resolve',
                         delay: 250
                     },
                     language: "pt-BR",
@@ -186,14 +184,16 @@
                             return $("<div class='row font-weight-bold'>" +
                                 "<div class='col-2 col-sm-2'></div>" +
                                 "<div class='col-10 col-sm-6'>" + 'Produto' + "</div>" +
-                                "<div class='col-6 col-sm-2 text-right '>" + 'Preço' + "</div>" +
-                                "<div class='col-6 col-sm-2 text-right '>" + 'Estoque' + "</div>" +
+                                "<div class='col-4 col-sm-2 text-right '>" + 'Custo' + "</div>" +
+                                "<div class='col-4 col-sm-2 text-right '>" + 'Preço' + "</div>" +
+                                "<div class='col-4 col-sm-2 text-right '>" + 'Estoque' + "</div>" +
                                 "</div>");
                         return $("<div class='row'>" +
                             "<div class='col-2 col-sm-2'><img src='" + item.imagem + "' class='rounded' style='width: 40px; max-height: 100px'></div>" +
                             "<div class='col-10 col-sm-6'>" + item.iderp + "-" + item.nome + "</div>" +
-                            "<div class='col-6 col-sm-2 text-right'>" + item.preco_formatado + "</div>" +
-                            "<div class='col-6 col-sm-2 text-right " + (item.estoque <= 0.00 ? 'text-danger' : 'text-dark') + "'>" + item.estoque_formatado + "</div>" +
+                            "<div class='col-4 col-sm-2 text-right'>" + item.custo_formatado + "</div>" +
+                            "<div class='col-4 col-sm-2 text-right'>" + item.preco_formatado + "</div>" +
+                            "<div class='col-4 col-sm-2 text-right " + (item.estoque <= 0.00 ? 'text-danger' : 'text-dark') + "'>" + item.estoque_formatado + "</div>" +
                             "</div>");
                     },
                     templateSelection: function (item) {

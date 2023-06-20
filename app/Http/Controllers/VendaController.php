@@ -108,6 +108,11 @@ class VendaController extends Controller
         $request = request()->all();
         $data['results'] = [];
         $empresa = auth()->user()->empresas()->findOrFail($empresa);
+        $tipoPreco = $empresa->tiposVendas()->where('id', request()->get('tiposvenda_id'))->first();
+        $idTipoPreco = 1;
+        if ($tipoPreco) {
+            $idTipoPreco = $tipoPreco->idtipoprecoerp;
+        }
         $produtos = $empresa->produtos()->where('ativo', 'S')->take(50);
         if (isset($request['q']) and $request['q'])
             $produtos->where(function ($query) use ($request) {
@@ -128,13 +133,17 @@ class VendaController extends Controller
                 'iderp' => null,
             ];
             foreach ($produtos->get() as $p) {
+                $precoVenda = (isset($p->precos[$idTipoPreco]) ? $p->precos[$idTipoPreco] : 0);
+                $custo = (isset($p->custos[$empresa->id]) ? $p->custos[$empresa->id] : 0);
                 $data['results'][] = [
                     'id' => $p->id,
                     'nome' => $p->nome,
                     'referencia' => $p->referencia,
                     'imagem' => ($p->imagem) ? asset('produtos/' . $p->imagem) : asset('images/no_photo.png'),
-                    'preco' => number_format($p->preco, 2),
-                    'preco_formatado' => 'R$' . number_format($p->preco, 2, ',', '.'),
+                    'preco' => number_format($precoVenda, 2),
+                    'preco_formatado' => 'R$' . number_format($precoVenda, 2, ',', '.'),
+                    'custo' => number_format($custo, 2),
+                    'custo_formatado' => 'R$' . number_format($custo, 2, ',', '.'),
                     'estoque' => number_format($p->estoque, 2),
                     'estoque_formatado' => number_format($p->estoque, 2, ',', '.'),
                     'iderp' => $p->iderp,
