@@ -131,13 +131,13 @@ class UserController extends Controller
         $u = auth()->user()->users()->findOrFail($user);
         $u->show_custo = false;
         $u->update();
-        return view('users.index', ['users' => auth()->user()->users()->paginate(), 'q' => null]);
+        return redirect()->route('user.vendedores.index');
     }
 
     public function habilitarCusto($user) {
         $u = auth()->user()->users()->findOrFail($user);
         $u->show_custo = true;
         $u->update();
-        return view('users.index', ['users' => auth()->user()->users()->paginate(), 'q' => null]);
+        return redirect()->route('user.vendedores.index');
     }
 }
