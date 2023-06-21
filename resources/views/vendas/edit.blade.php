@@ -184,14 +184,18 @@
                             return $("<div class='row font-weight-bold'>" +
                                 "<div class='col-2 col-sm-2'></div>" +
                                 "<div class='col-10 col-sm-6'>" + 'Produto' + "</div>" +
+                                @if(auth()->user()->showCusto())
                                 "<div class='col-4 col-sm-2 text-right '>" + 'Custo' + "</div>" +
+                                @endif
                                 "<div class='col-4 col-sm-2 text-right '>" + 'Preço' + "</div>" +
                                 "<div class='col-4 col-sm-2 text-right '>" + 'Estoque' + "</div>" +
                                 "</div>");
                         return $("<div class='row'>" +
                             "<div class='col-2 col-sm-2'><img src='" + item.imagem + "' class='rounded' style='width: 40px; max-height: 100px'></div>" +
                             "<div class='col-10 col-sm-6'>" + item.iderp + "-" + item.nome + "</div>" +
+                            @if(auth()->user()->showCusto())
                             "<div class='col-4 col-sm-2 text-right'>" + item.custo_formatado + "</div>" +
+                            @endif
                             "<div class='col-4 col-sm-2 text-right'>" + item.preco_formatado + "</div>" +
                             "<div class='col-4 col-sm-2 text-right " + (item.estoque <= 0.00 ? 'text-danger' : 'text-dark') + "'>" + item.estoque_formatado + "</div>" +
                             "</div>");

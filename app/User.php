@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'user_token', 'user_id', 'iderp', 'meta'
+        'name', 'email', 'password', 'user_token', 'user_id', 'iderp', 'meta', 'show_custo'
     ];
 
     /**
@@ -37,6 +37,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'show_custo' => 'boolean'
     ];
 
     public static function geraToken()
@@ -88,4 +89,12 @@ class User extends Authenticatable
         return $this->belongsToMany(Rota::class, 'users_rotas');
     }
 
+    public function showCusto()
+    {
+        if (!$this->user_id) {
+            return true;
+        }
+
+        return $this->show_custo;
+    }
 }

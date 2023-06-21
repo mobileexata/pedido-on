@@ -108,9 +108,11 @@
                                         <div class="col-6 col-sm-1">
                                             <b class="float-right">ESTOQUE</b>
                                         </div>
+                                        @if(auth()->user()->showCusto())
                                         <div class="col-6 col-sm-1">
                                             <b class="float-right">PREÇO DE CUSTO</b>
                                         </div>
+                                        @endif
                                         <div class="col-6 col-sm-2">
                                             <b class="float-right">PREÇO DE VENDA</b>
                                         </div>
@@ -134,9 +136,11 @@
                                                 <span
                                                     class="float-right @if ((float) $p->estoque < 0.0) text-danger @endif">{{ number_format($p->estoque, 0, ',', '.') }}</span>
                                             </div>
+                                            @if(auth()->user()->showCusto())
                                             <div class="col-6 col-sm-1">
                                                 <b class="float-right">R$ {{ number_format((isset($p->custos[$id_erp_empresa]) ? $p->custos[$id_erp_empresa] :   0), 2, ',', '.') }}</b>
                                             </div>
+                                            @endif
                                             <div class="col-6 col-sm-2">
                                                 @foreach($tipos_precos as $id => $t)
                                                     {{ $t }}: <b class="float-right">R$ {{ number_format((isset($p->precos[$id]) ? $p->precos[$id] :   0), 2, ',', '.') }}</b><br>

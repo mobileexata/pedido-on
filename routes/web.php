@@ -33,6 +33,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('create', 'UserController@create')->name('create');
             Route::get('{user}/edit', 'UserController@edit')->name('edit');
             Route::post('store', 'UserController@store')->name('store');
+            Route::put('{user}/habilitar-custo', 'UserController@habilitarCusto')->name('enable-custo');
+            Route::put('{user}/desabilitar-custo', 'UserController@desabilitarCusto')->name('disable-custo');
             Route::put('{user}', 'UserController@update')->name('update');
             Route::delete('{user}', 'UserController@destroy')->name('destroy');
         });

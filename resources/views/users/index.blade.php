@@ -44,6 +44,21 @@
                                         <td>{{ number_format($u->meta, 2, ',', '.') }}</td>
                                         <td>{{ date('d/m/Y', strtotime($u->created_at)) }}</td>
                                         <td class="text-right">
+                                            <div style="display: inline-block;">
+                                                @if($u->show_custo)
+                                                <form method="post" action="{{ route('user.vendedores.disable-custo', ['user' => $u->id]) }}">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit" class="btn btn-sm btn-outline-info">Ocultar custo</button>
+                                                </form>
+                                                @else
+                                                <form method="post" action="{{ route('user.vendedores.enable-custo', ['user' => $u->id]) }}">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit" class="btn btn-sm btn-outline-info">Exibir custo</button>
+                                                </form>
+                                                @endif
+                                            </div>
                                             <a class="btn btn-outline-primary btn-sm" href="{{ route('user.vendedores.edit', ['user' => $u->id]) }}">Alterar</a>
                                             <div style="display: inline-block;">
                                                 <form method="post" action="{{ route('user.vendedores.destroy', ['user' => $u->id]) }}">
