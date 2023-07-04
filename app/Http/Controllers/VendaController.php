@@ -26,15 +26,15 @@ class VendaController extends Controller
             ->user()
             ->vendas()
             ->orderByDesc('created_at')
-            ->when(!empty($query_param_search), function ($query) use ($query_param_search) {
-                return $query->whereExists(function ($query) use ($query_param_search) {
-                    $query->select(DB::raw(1))
-                        ->from('clientes')
-                        ->whereColumn('vendas.cliente_id', 'clientes.id')
-                        ->where('clientes.nome', 'like', "%$query_param_search%")
-                        ->orWhere('clientes.documento', 'like', "%$query_param_search%");
-                });
-            })
+            // ->when(!empty($query_param_search), function ($query) use ($query_param_search) {
+            //     return $query->whereExists(function ($query) use ($query_param_search) {
+            //         $query->select(DB::raw(1))
+            //             ->from('clientes')
+            //             ->whereColumn('vendas.cliente_id', 'clientes.id')
+            //             ->where('clientes.nome', 'like', "%$query_param_search%")
+            //             ->orWhere('clientes.documento', 'like', "%$query_param_search%");
+            //     });
+            // })
             ->whereBetween('vendas.created_at', [
                 $data_inicial . ' 00:00:00',
                 $data_final . ' 23:59:59'
