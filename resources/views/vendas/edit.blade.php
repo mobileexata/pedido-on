@@ -169,10 +169,11 @@
             }
 
             function loadSelectProduto() {
+                $('select.filter_type').select2()
                 $('select.produto_id').select2({
                     ajax: {
                         url: function () {
-                            return $('meta[name="site-link"]').attr('content') + 'pesquisa/produtos/' + $('select[name="empresa_id"]').val() + '?tiposvenda_id=' + $('select[name="tiposvenda_id"]').val()
+                            return $('meta[name="site-link"]').attr('content') + 'pesquisa/produtos/' + $('select[name="empresa_id"]').val() + '?tiposvenda_id=' + $('select[name="tiposvenda_id"]').val() + '&filter_type=' + $('select[name="filter_type"]').val()
                         },
                         dataType: 'json',
                         delay: 250

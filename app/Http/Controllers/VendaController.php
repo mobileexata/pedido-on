@@ -26,15 +26,17 @@ class VendaController extends Controller
             ->user()
             ->vendas()
             ->orderByDesc('created_at')
-            // ->when(!empty($query_param_search), function ($query) use ($query_param_search) {
-            //     return $query->whereExists(function ($query) use ($query_param_search) {
-            //         $query->select(DB::raw(1))
-            //             ->from('clientes')
-            //             ->whereColumn('vendas.cliente_id', 'clientes.id')
-            //             ->where('clientes.nome', 'like', "%$query_param_search%")
-            //             ->orWhere('clientes.documento', 'like', "%$query_param_search%");
-            //     });
-            // })
+            ->when(!empty($query_param_search), function ($query) use ($query_param_search) {
+                return $query->whereExists(function ($query) use ($query_param_search) {
+                    $query->select(DB::raw(1))
+                        ->from('clientes')
+                        ->whereColumn('vendas.cliente_id', 'clientes.id')
+                        ->where(function ($query) use ($query_param_search) {
+                            return $query->where('clientes.nome', 'like', "%$query_param_search%")
+                                ->orWhere('clientes.documento', 'like', "%$query_param_search%");
+                        });
+                });
+            })
             ->whereBetween('vendas.created_at', [
                 $data_inicial . ' 00:00:00',
                 $data_final . ' 23:59:59'
@@ -103,9 +105,8 @@ class VendaController extends Controller
         return $situacao_saldo_calc;
     }
 
-    public function produtos($empresa)
+    public function produtos(Request $request, $empresa)
     {
-        $request = request()->all();
         $data['results'] = [];
         $empresa = auth()->user()->empresas()->findOrFail($empresa);
         $tipoPreco = $empresa->tiposVendas()->where('id', request()->get('tiposvenda_id'))->first();
@@ -114,13 +115,41 @@ class VendaController extends Controller
             $idTipoPreco = $tipoPreco->idtipoprecoerp;
         }
         $produtos = $empresa->produtos()->where('ativo', 'S')->take(50);
-        if (isset($request['q']) and $request['q'])
-            $produtos->where(function ($query) use ($request) {
-                return $query->orWhere('referencia', 'like', "%{$request['q']}%")
-                    ->orWhere('nome', 'like', "%{$request['q']}%")
-                    ->orWhere('iderp', 'like', "%{$request['q']}%")
-                    ->orWhere('ean', 'like', "%{$request['q']}%");
-                });
+        $filterType = 'aproximada';
+        if ($request->get('filter_type')) {
+            $filters = [
+                'aproximada', 'ref', 'nome', 'cod', 'ean'
+            ];
+            if (in_array($request->get('filter_type'), $filters)) {
+                $filterType = $request->get('filter_type');
+            }
+        }
+
+        if ($request->get('q')) {
+            $filter = $request->get('q');
+            switch($filterType) {
+                case 'aproximada':
+                    $produtos->where(function ($query) use ($filter) {
+                        return $query->orWhere('referencia', 'like', "%$filter%")
+                            ->orWhere('nome', 'like', "%$filter%")
+                            ->orWhere('iderp', 'like', "%$filter%")
+                            ->orWhere('ean', 'like', "%$filter%");
+                        });
+                    break;
+                case 'ref':
+                    $produtos->where('referencia', 'like', "%$filter%");
+                    break;
+                case 'nome':
+                    $produtos->where('nome', 'like', "%$filter%");
+                    break;
+                case 'cod':
+                    $produtos->where('iderp', 'like', "%$filter%");
+                    break;
+                case 'ean':
+                    $produtos->where('ean', 'like', "%$filter%");
+                    break;
+            }
+        }
 
         $prod = $produtos->get();
         if ($prod->count()) {

@@ -3,15 +3,26 @@
     <input type="hidden" name="venda_id" value="{{ $venda->id }}">
     <input type="hidden" name="nome" value="">
     <div class="row">
-        <div class="col-12 col-sm-10 form-group">
-            <label for="produto_id">
-                Produto
+        <div class="col-12 col-sm-2 form-group">
+            <label for="filter_type">
+                Tipo de pesquisa
             </label>
+            <select name="filter_type" class="filter_type" style="width: 100%;">
+                <option value="aproximada">Aproximada</option>
+                <option value="ref">Referência</option>
+                <option value="nome">Nome</option>
+                <option value="cod">Código</option>
+                <option value="ean">EAN</option>
+            </select>
+        </div>
+        <div class="col-12 col-sm-6 form-group">
+            <label for="produto_id">Produto</label>
             <select name="produto_id" class="produto_id @error('produto_id') is-invalid @enderror" style="width: 100%;"></select>
             @error('produto_id')
             <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
+        
         <div class="col-6 col-sm-2 form-group">
             <label for="estoque">
                 Estoque
