@@ -85,7 +85,9 @@
                     @endif
                     @if($preco == 1)
                     <td class="text-right">
-                        R$ {{ number_format($p->preco, 2, ',', '.') }}
+                        @foreach($tipos_precos as $id => $t)
+                            {{ $t }}: <b class="float-right">R$ {{ number_format((isset($p->precos[$id]) ? $p->precos[$id] :   0), 2, ',', '.') }}</b><br>
+                        @endforeach
                     </td>
                     @endif
                 </tr>

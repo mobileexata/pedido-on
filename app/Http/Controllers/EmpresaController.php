@@ -111,7 +111,7 @@ class EmpresaController extends Controller
             })->when(isset($data['order']), function ($query) use ($data) {
                 if (!isset(self::ORDERS[$data['order']])) {
                     $data['order'] = 1;
-                } 
+                }
                 return $query->orderBy(self::ORDERS[$data['order']]['column'], self::ORDERS[$data['order']]['type'] ?? 'asc');
             });
     }
@@ -153,6 +153,7 @@ class EmpresaController extends Controller
             'estoque' => (int)request()->input('estoque', 1),
             'preco' => (int)request()->input('preco', 1),
             'ativo' => request()->input('ativo', 'S'),
+            'tipos_precos' => $this->e->tiposVendas()->get()->pluck('desctipopreco', 'idtipoprecoerp')->toArray(),
         ])->render();
         $pdf = PDF::loadHtml($view);
         return $pdf->stream('produtos-' . $this->e->fantasia . '-' . time() . '.pdf');
@@ -199,7 +200,7 @@ class EmpresaController extends Controller
                         })->when($request->get('order', false), function ($query) use ($request) {
                             if (!isset(self::ORDERS[$request->get('order')])) {
                                 return $query->orderBy(self::ORDERS[1]['column'], 'asc');
-                            } 
+                            }
                             return $query->orderBy(self::ORDERS[$request->get('order')]['column'], self::ORDERS[$request->get('order')]['type'] ?? 'asc');
                         })
                         ->get()
@@ -211,9 +212,9 @@ class EmpresaController extends Controller
             'estoque' => (int) $request->get('estoque', 1),
             'preco' => (int)request()->input('preco', 1),
             'ativo' => request()->input('ativo', 'S'),
+            'tipos_precos' => $this->e->tiposVendas()->get()->pluck('desctipopreco', 'idtipoprecoerp')->toArray(),
         ])->render();
         $pdf = PDF::loadHtml($view);
         return $pdf->stream('fabricantes-produtos-' . $this->e->fantasia . '-' . time() . '.pdf');
     }
-
 }

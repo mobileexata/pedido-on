@@ -8,7 +8,7 @@ class Produto extends Model
 {
 
     protected $fillable = [
-        'empresa_id', 'nome', 'preco', 'estoque', 'iderp', 'imagem', 'ativo', 'ean', 'referencia', 'fabricante_id', 'precos', 'custos'
+        'empresa_id', 'nome', 'preco', 'estoque', 'iderp', 'imagem', 'ativo', 'ean', 'referencia', 'fabricante_id', 'precos', 'custos', 'grupo'
     ];
 
     protected $casts = [
@@ -25,7 +25,8 @@ class Produto extends Model
         $this->save();
     }
 
-    public function getPrecoVenda($idErpTipoVenda = 0) {
+    public function getPrecoVenda($idErpTipoVenda = 0)
+    {
         if ($idErpTipoVenda == 0) {
             return $this->preco;
         }

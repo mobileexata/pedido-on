@@ -115,7 +115,7 @@ class ApiController extends Controller
         $res = collect();
 
         $this->user->empresas->each(function ($empresa) use ($res) {
-            $empresa->clientes()->whereNull('iderp')->get()->each(function ($cliente) use ($empresa, $res){
+            $empresa->clientes()->whereNull('iderp')->get()->each(function ($cliente) use ($empresa, $res) {
                 $res->push([
                     "id" => $cliente->id,
                     "iderpempresa" => (int) $empresa->iderp,
@@ -228,16 +228,17 @@ class ApiController extends Controller
             $fabricante_id = null;
             if (isset($p->fabricante_id) && $p->fabricante_id) {
                 $fabricante = $empresa->fabricantes->where('iderp', $p->fabricante_id)->first();
-                
+
                 if (!$fabricante) {
                     return response()->json(['mensagem' => "fabricante não encontrado iderp recebido: {$p->fabricante_id}"], $this->statusError);
                 }
-                
+
                 $fabricante_id = $fabricante->id;
             }
 
             $precos = isset($p->Precos) ? collect($p->Precos)->pluck("vlpreco", "codtipopreco")->toArray() : ["1" => isset($p->preco) ? $p->preco : 0];
             $custos = isset($p->Custos) ? collect($p->Custos)->pluck("vlcusto", "codempresa")->toArray() : ["1" => 0];
+            $grupos = isset($p->Grupo) ? collect($p->Grupo)->toArray() : ["codgrupo" => 1, "descgrupo" => "GERAL", "codsubgrupo" => 1, "descsubgrupo" => "GERAL"];
 
             Produto::updateOrCreate([
                 'empresa_id' => $empresa->id,
@@ -252,6 +253,7 @@ class ApiController extends Controller
                 'ean' => $p->ean ?? null,
                 'referencia' => $p->referencia ?? null,
                 'fabricante_id' => $fabricante_id,
+                'grupo' => $grupos,
             ]);
         }
         return response()->json(['mensagem' => 'Produto cadastrados com sucesso']);
