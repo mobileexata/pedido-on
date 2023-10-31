@@ -78,6 +78,30 @@
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-3 form-group">
+                                    <label>Filtro de grupo</label>
+                                    <select class="form-control" name="grupo"
+                                        onchange="$(this).parents('form').submit()">
+                                        <option value="">Todos</option>
+                                        @foreach ($grupos as $grupo)
+                                            <option value="{{ $grupo['codgrupo'] }}"
+                                                @if (request()->get('grupo') == $grupo['codgrupo']) selected @endif>{{ $grupo['descgrupo'] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-12 col-sm-3 form-group">
+                                    <label>Filtro de sub grupo</label>
+                                    <select class="form-control" name="subgrupo"
+                                        onchange="$(this).parents('form').submit()">
+                                        <option value="">Todos</option>
+                                        @foreach ($grupos as $grupo)
+                                            <option value="{{ $grupo['codsubgrupo'] }}"
+                                                @if (request()->get('subgrupo') == $grupo['codsubgrupo']) selected @endif>{{ $grupo['descsubgrupo'] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-12 col-sm-3 form-group">
                                     <label>Ordem</label>
                                     <select class="form-control" name="order"
                                         onchange="$(this).parents('form').submit()">
@@ -95,7 +119,7 @@
                                 <li class="list-group-item">
                                     <div class="row">
                                         <div class="col-2 col-sm-1"></div>
-                                        <div class="col-10 col-sm-5">
+                                        <div class="col-10 col-sm-3">
                                             <b>CÓD. - PRODUTO</b>
                                         </div>
                                         <div class="col-6 col-sm-1">
@@ -104,6 +128,9 @@
                                             @else
                                             <b>REF.</b>
                                             @endif
+                                        </div>
+                                        <div class="col-6 col-sm-2">
+                                            <b class="float-left">GRUPO/<br>SUBGRUPO</b>
                                         </div>
                                         <div class="col-6 col-sm-1">
                                             <b class="float-right">ESTOQUE</b>
@@ -126,11 +153,15 @@
                                                 <img src="@if ($p->imagem) {{ asset('produtos/' . $p->imagem) }}@else {{ asset('images/no_photo.png') }} @endif"
                                                     class="rounded" style="width: 50px; max-height: 100px">
                                             </div>
-                                            <div class="col-10 col-sm-5">
+                                            <div class="col-10 col-sm-3">
                                                 <h6>{{ $p->iderp }} - {{ $p->nome }}</h6>
                                             </div>
                                             <div class="col-6 col-sm-1">
                                                 <span>{{ $p->referencia }}</span>
+                                            </div>
+                                            <div class="col-6 col-sm-2">
+                                                <span class="float-left">{{ $p->grupo['descgrupo'] }}<b>&nbsp;/</b></span><br>
+                                                <span class="float-left">{{ $p->grupo['descsubgrupo'] }}</span>
                                             </div>
                                             <div class="col-6 col-sm-1">
                                                 <span

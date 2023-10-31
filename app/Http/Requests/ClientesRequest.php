@@ -24,14 +24,13 @@ class ClientesRequest extends FormRequest
     public function rules()
     {
         return [
-            'clientes' => ['required', 'array'],
-            'clientes.*.iderp' => ['required', 'integer'],
-            'clientes.*.idempresaerp' => ['required', 'string'],
-            'clientes.*.idrotaerp' => ['required', 'string'],
-            'clientes.*.nome' => ['required', 'string'],
-            'clientes.*.documento' => ['required', 'string'],
-            'clientes.*.ativo' => ['required', 'string', 'in:S,N'],
-            'clientes.*.saldo_pendente' => [ 'required', 'numeric'],
+            '*.iderp' => ['required', 'string'],
+            '*.idempresaerp' => ['required', 'string'],
+            '*.idrotaerp' => ['required', 'string'],
+            '*.nome' => ['required', 'string'],
+            '*.documento' => ['required', 'string'],
+            '*.ativo' => ['required', 'string', 'in:S,N'],
+            '*.saldo_pendente' => ['required', 'numeric'],
         ];
     }
 }

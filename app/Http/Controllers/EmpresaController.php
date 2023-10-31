@@ -68,7 +68,10 @@ class EmpresaController extends Controller
             'orders' => self::ORDERS,
             'order' => $data['order'] ?? null,
             'ativo' => $data['ativo'] ?? null,
+            'grupo' => $data['grupo'] ?? null,
+            'subgrupo' => $data['subgrupo'] ?? null,
             'tipos_precos' => $this->e->tiposVendas()->get()->pluck('desctipopreco', 'idtipoprecoerp')->toArray(),
+            'grupos' => $this->e->produtos()->select('grupo')->distinct()->get()->pluck('grupo')->toArray(),
         ]);
     }
 
@@ -108,7 +111,14 @@ class EmpresaController extends Controller
             })
             ->when(isset($data['ativo']), function ($query) use ($data) {
                 return $query->where('ativo', $data['ativo']);
-            })->when(isset($data['order']), function ($query) use ($data) {
+            })
+            ->when(isset($data['grupo']), function ($query) use ($data) {
+                return $query->where('grupo->codgrupo', $data['grupo']);
+            })
+            ->when(isset($data['subgrupo']), function ($query) use ($data) {
+                return $query->where('grupo->codsubgrupo', $data['subgrupo']);
+            })
+            ->when(isset($data['order']), function ($query) use ($data) {
                 if (!isset(self::ORDERS[$data['order']])) {
                     $data['order'] = 1;
                 }

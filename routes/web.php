@@ -82,3 +82,20 @@ Route::prefix('api')->group(function () {
     Route::post('rotas-funcionarios/{token}', 'ApiController@rotasFuncionarios');
     Route::post('fabricantes/{token}', 'ApiController@fabricantes');
 });
+
+Route::middleware(['mdv2'])->prefix('api/v2')->group(function () {
+    Route::get('', function () {
+        return response()->json(['mensagem' => 'Connected']);
+    });
+    Route::post('/empresas', 'ApiControllerV2@empresas');
+    Route::post('/clientes', 'ApiControllerV2@clientes');
+    Route::get('/clientes-pendentes', 'ApiControllerV2@clientesPendentes');
+    Route::patch('/clientes', 'ApiControllerV2@setClientesPendentes');
+    Route::post('/tipos-vendas', 'ApiControllerV2@tiposVendas');
+    Route::post('/produtos', 'ApiControllerV2@produtos');
+    Route::get('/pedidos', 'ApiControllerV2@getPedidos');
+    Route::post('/pedidos', 'ApiControllerV2@setPedidos');
+    Route::post('/rotas', 'ApiControllerV2@rotas');
+    Route::post('/rotas-funcionarios', 'ApiControllerV2@rotasFuncionarios');
+    Route::post('/fabricantes', 'ApiControllerV2@fabricantes');
+});

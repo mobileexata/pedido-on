@@ -14,6 +14,7 @@ class Produto extends Model
     protected $casts = [
         'precos' => 'array',
         'custos' => 'array',
+        'grupo' => 'array'
     ];
 
     public function atualizaEstoque($qtd, $op = '-')
